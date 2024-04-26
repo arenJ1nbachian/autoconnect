@@ -12,8 +12,6 @@ const Menu = () => {
             height: "11vh",
             boxShadow: "none",
             backgroundColor: "rgb(0,148,255)",
-            borderBottomLeftRadius: "20%",
-            borderBottomRightRadius: "20%",
           }}
         >
           <Toolbar
@@ -62,6 +60,64 @@ const Menu = () => {
         </AppBar>
       </Box>
       <SearchBar />
+      {/*<Box sx={{ flexGrow: 1 }}>
+        <AppBar
+          position="static"
+          sx={{
+            height: "12vh",
+            boxShadow: "none",
+            backgroundColor: "rgb(0,148,255)",
+          }}
+        >
+          <Toolbar
+            sx={{
+              padding: "0px !important",
+              minHeight: "80px !important",
+              marginTop: "auto",
+            }}
+          >
+            <Button
+              component={NavLink}
+              to="/register"
+              sx={{
+                color: "white",
+                textDecoration: "none",
+                flexGrow: 1,
+                padding: 0,
+                fontSize: 18,
+              }}
+            >
+              Mes annonces
+            </Button>
+            <Button
+              component={NavLink}
+              to="/listings"
+              sx={{
+                color: "white",
+                textDecoration: "none",
+                flexGrow: 1,
+                padding: 0,
+                fontSize: 18,
+              }}
+            >
+              Mes favoris
+            </Button>
+            <Button
+              component={NavLink}
+              to="/login"
+              sx={{
+                color: "white",
+                textDecoration: "none",
+                flexGrow: 1,
+                padding: 0,
+                fontSize: 18,
+              }}
+            >
+              Paramètre du compte
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </Box>*/}
     </>
   );
 };
