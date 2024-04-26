@@ -23,7 +23,7 @@ const SearchBar = () => {
       component="form"
       sx={{
         position: "fixed",
-        top: "9%",
+        top: "7%",
         left: "50%",
         marginLeft: "-400px",
         p: "2px 4px",

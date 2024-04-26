@@ -9,7 +9,7 @@ const Menu = () => {
         <AppBar
           position="static"
           sx={{
-            height: "13vh",
+            height: "11vh",
             boxShadow: "none",
             backgroundColor: "rgb(0,148,255)",
             borderBottomLeftRadius: "20%",
@@ -27,7 +27,7 @@ const Menu = () => {
                 textDecoration: "none",
                 flexGrow: 1,
                 padding: 0,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               S'inscrire dès maintenant
@@ -40,7 +40,7 @@ const Menu = () => {
                 textDecoration: "none",
                 flexGrow: 1,
                 padding: 0,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               Voitures d'occasion en vente
@@ -53,7 +53,7 @@ const Menu = () => {
                 textDecoration: "none",
                 flexGrow: 1,
                 padding: 0,
-                fontSize: 20,
+                fontSize: 18,
               }}
             >
               Se connecter

@@ -11,6 +11,7 @@ import Root from "../Layouts/Root";
 import UserSettings from "../Layouts/UserSettings";
 import UserListings from "../Layouts/UserListings";
 import UserFavorites from "../Layouts/UserFavorites";
+import background from "../img/background.jpg";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,18 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <div
+      style={{
+        backgroundImage: `url('${background}')`,
+        backgroundSize: "cover",
+        minHeight: "100vh",
+        minWidth: "100vw",
+      }}
+    >
+      <RouterProvider router={router} />
+    </div>
+  );
 };
 
 export default App;
