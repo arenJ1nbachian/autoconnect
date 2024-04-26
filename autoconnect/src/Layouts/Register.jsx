@@ -69,6 +69,7 @@ const Register = () => {
       <Typography
         sx={{
           marginTop: 9,
+          marginBottom: 3,
           fontFamily: "Cooper Black",
           color: "rgb(0,74,127)",
           fontSize: 40,
@@ -89,6 +90,7 @@ const Register = () => {
           borderRadius: "15px",
           height: "60vh",
           border: "6px solid rgb(0,74,127)",
+          boxShadow: "0px 4px 35px rgba(0, 74, 127, 1)",
         }}
       >
         <div>
