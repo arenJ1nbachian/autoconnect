@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "name": "autoconnect_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/classes-mot/projetsynthese-4a5_projetsynthese_arenjinbachian.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/classes-mot/projetsynthese-4a5_projetsynthese_arenjinbachian/issues"
+  },
+  "homepage": "https://github.com/classes-mot/projetsynthese-4a5_projetsynthese_arenjinbachian#readme",
+  "description": ""
+}
