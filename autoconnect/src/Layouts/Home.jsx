@@ -9,10 +9,8 @@ import { NavLink } from "react-router-dom";
 const Home = () => {
   return (
     <>
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}
-      >
-        <img src={collection} alt="Search Icon" />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <img src={collection} style={{ marginTop: "15vh" }} alt="Search Icon" />
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <Typography

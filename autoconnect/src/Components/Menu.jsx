@@ -7,8 +7,9 @@ const Menu = () => {
     <>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar
-          position="static"
+          position="fixed"
           sx={{
+            zIndex: 2,
             height: "11vh",
             boxShadow: "none",
             backgroundColor: "rgb(0,148,255)",
