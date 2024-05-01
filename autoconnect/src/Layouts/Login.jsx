@@ -41,7 +41,7 @@ const Login = () => {
     <>
       <Typography
         sx={{
-          marginTop: 10,
+          paddingTop: 22,
           marginBottom: 3,
           fontFamily: "Cooper Black",
           color: "rgb(0,74,127)",

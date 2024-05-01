@@ -2,14 +2,16 @@ import { Button, TextField, Typography } from "@mui/material";
 import carIcon from "../img/carIcon.png";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    number: "",
-    username: "",
+    phoneNumber: "",
+    userName: "",
     password: "",
     confirmPassword: "",
   });
@@ -36,11 +38,11 @@ const Register = () => {
       errors.password = "Les mots de passe ne sont pas identiques";
       isValid = false;
     }
-    if (formData.firstname.length === 0) {
+    if (formData.firstName.length === 0) {
       errors.firstname = "Ce champ est requis";
       isValid = false;
     }
-    if (formData.lastname.length === 0) {
+    if (formData.lastName.length === 0) {
       errors.lastname = "Ce champ est requis";
       isValid = false;
     }
@@ -48,7 +50,7 @@ const Register = () => {
       errors.email = "Ce champ est requis";
       isValid = false;
     }
-    if (formData.username.length === 0) {
+    if (formData.userName.length === 0) {
       errors.username = "Ce champ est requis";
       isValid = false;
     }
@@ -61,14 +63,27 @@ const Register = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
-    validateForm();
+  const handleSubmit = async (e) => {
+    if (validateForm()) {
+      try {
+        const res = await fetch("http://localhost:5000/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (res.ok) {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    }
   };
   return (
     <>
       <Typography
         sx={{
-          marginTop: 9,
+          paddingTop: 22,
           marginBottom: 3,
           fontFamily: "Cooper Black",
           color: "rgb(0,74,127)",
@@ -163,7 +178,7 @@ const Register = () => {
               <TextField
                 label="Prénom"
                 variant="standard"
-                name="firstname"
+                name="firstName"
                 value={formData.firstname}
                 onChange={handleChange}
                 required
@@ -175,7 +190,7 @@ const Register = () => {
               <TextField
                 label="Nom de famille"
                 variant="standard"
-                name="lastname"
+                name="lastName"
                 value={formData.lastname}
                 onChange={handleChange}
                 required
@@ -202,7 +217,7 @@ const Register = () => {
                 label="Numéro de téléphone"
                 variant="standard"
                 type="tel"
-                name="number"
+                name="phoneNumber"
                 value={formData.number}
                 onChange={handleChange}
                 required
@@ -215,7 +230,7 @@ const Register = () => {
               <TextField
                 label="Nom d'utilisateur"
                 variant="standard"
-                name="username"
+                name="userName"
                 value={formData.username}
                 onChange={handleChange}
                 required
