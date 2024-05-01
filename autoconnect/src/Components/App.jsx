@@ -27,6 +27,19 @@ const router = createBrowserRouter([
       { path: "listings", element: <Listings /> },
       { path: "listings/search/:query", element: <Listings /> },
       { path: "listings/details/:listingId", element: <CarListingDetails /> },
+    ],
+  },
+]);
+
+const loggedInRouter = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <Error />,
+    children: [
+      { path: "listings", element: <Listings /> },
+      { path: "listings/search/:query", element: <Listings /> },
+      { path: "listings/details/:listingId", element: <CarListingDetails /> },
       { path: "listing/create", element: <CarListingCreation /> },
       { path: "listing/edit/:listingId", element: <CarListingEdit /> },
       { path: "profile/:userId/settings", element: <UserSettings /> },
@@ -39,8 +52,6 @@ const router = createBrowserRouter([
 const App = () => {
   const [token, setToken] = useState(false);
   const [userId, setUserId] = useState(false);
-
-  console.log(userId, token);
 
   const login = useCallback((uid, token) => {
     setToken(token);
@@ -69,7 +80,7 @@ const App = () => {
           logout: logout,
         }}
       >
-        <RouterProvider router={router} />
+        <RouterProvider router={token && userId ? loggedInRouter : router} />
       </AuthContext.Provider>
     </div>
   );
