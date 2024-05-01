@@ -1,9 +1,10 @@
 import { Button, TextField, Typography } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import carIcon from "../img/carIcon.png";
 import { useState } from "react";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,6 +36,23 @@ const Login = () => {
 
     setFormErrors(errors);
     return isValid;
+  };
+
+  const handleSubmit = async (e) => {
+    if (validateForm()) {
+      try {
+        const res = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (res.ok) {
+          navigate("/listings");
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    }
   };
 
   return (
@@ -164,7 +182,7 @@ const Login = () => {
             </div>
 
             <Button
-              onClick={validateForm}
+              onClick={handleSubmit}
               variant="contained"
               sx={{ marginTop: "20px" }}
             >

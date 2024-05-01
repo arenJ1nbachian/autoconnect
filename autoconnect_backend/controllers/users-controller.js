@@ -1,6 +1,7 @@
 const user = require("../models/user");
 const Users = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const createUser = async (req, res, next) => {
   const { firstName, lastName, email, phoneNumber, userName, password } =
@@ -31,7 +32,31 @@ const createUser = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {};
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await Users.findOne({ email: email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, "cleSuperSecrete", {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: "Failed to log in" });
+  }
+};
 
 const getProfile = async (req, res, next) => {};
 
