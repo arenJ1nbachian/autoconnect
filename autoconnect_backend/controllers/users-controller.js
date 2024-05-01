@@ -58,9 +58,36 @@ const login = async (req, res, next) => {
   }
 };
 
-const getProfile = async (req, res, next) => {};
+const getProfile = async (req, res, next) => {
+  try {
+    const uid = req.params.uid;
+    const user = await Users.findById({ _id: uid });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-const editUser = async (req, res, next) => {};
+const editUser = async (req, res, next) => {
+  const { _id, ...newData } = req.body;
+  try {
+    const updatedUser = await Users.findByIdAndUpdate(_id, newData, {
+      new: true,
+    });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Failed to update user" });
+  }
+};
 
 const deleteUser = async (req, res, next) => {};
 

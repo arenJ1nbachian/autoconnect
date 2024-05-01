@@ -12,7 +12,7 @@ router.use(checkAuth);
 
 router.get("/:uid", usersController.getProfile);
 
-router.put("/:uid", usersController.editUser);
+router.patch("/:uid", usersController.editUser);
 
 router.delete("/:uid", usersController.deleteUser);
 

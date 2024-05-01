@@ -11,7 +11,7 @@ import Root from "../Layouts/Root";
 import UserSettings from "../Layouts/UserSettings";
 import UserListings from "../Layouts/UserListings";
 import UserFavorites from "../Layouts/UserFavorites";
-import background from "../img/background.jpg";
+
 import { AuthContext } from "../Contexts/AuthContext";
 import { useCallback, useState } from "react";
 
@@ -63,26 +63,17 @@ const App = () => {
   }, []);
 
   return (
-    <div
-      style={{
-        backgroundImage: `url('${background}')`,
-        backgroundSize: "cover",
-        minHeight: "100vh",
-        minWidth: "100vw",
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: !!token,
+        token: token,
+        userId: userId,
+        login: login,
+        logout: logout,
       }}
     >
-      <AuthContext.Provider
-        value={{
-          isLoggedIn: !!token,
-          token: token,
-          userId: userId,
-          login: login,
-          logout: logout,
-        }}
-      >
-        <RouterProvider router={token && userId ? loggedInRouter : router} />
-      </AuthContext.Provider>
-    </div>
+      <RouterProvider router={token && userId ? loggedInRouter : router} />
+    </AuthContext.Provider>
   );
 };
 
