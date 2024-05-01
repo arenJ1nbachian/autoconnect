@@ -1,9 +1,11 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import carIcon from "../img/carIcon.png";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../Contexts/AuthContext";
 
 const Login = () => {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -47,6 +49,9 @@ const Login = () => {
           body: JSON.stringify(formData),
         });
         if (res.ok) {
+          const resData = await res.json();
+
+          auth.login(resData.uid, resData.token);
           navigate("/listings");
         }
       } catch (error) {

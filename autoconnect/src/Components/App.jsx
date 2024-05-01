@@ -12,6 +12,8 @@ import UserSettings from "../Layouts/UserSettings";
 import UserListings from "../Layouts/UserListings";
 import UserFavorites from "../Layouts/UserFavorites";
 import background from "../img/background.jpg";
+import { AuthContext } from "../Contexts/AuthContext";
+import { useCallback, useState } from "react";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,20 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
+  const [token, setToken] = useState(false);
+  const [userId, setUserId] = useState(false);
+
+  console.log(userId, token);
+
+  const login = useCallback((uid, token) => {
+    setToken(token);
+    setUserId(uid);
+  }, []);
+  const logout = useCallback(() => {
+    setToken(null);
+    setUserId(null);
+  }, []);
+
   return (
     <div
       style={{
@@ -44,7 +60,17 @@ const App = () => {
         minWidth: "100vw",
       }}
     >
-      <RouterProvider router={router} />
+      <AuthContext.Provider
+        value={{
+          isLoggedIn: !!token,
+          token: token,
+          userId: userId,
+          login: login,
+          logout: logout,
+        }}
+      >
+        <RouterProvider router={router} />
+      </AuthContext.Provider>
     </div>
   );
 };

@@ -1,13 +1,16 @@
 const express = require("express");
+const checkAuth = require("../middleware/check-auth");
 
 const listingsController = require("../controllers/listings-controller");
 const router = express.Router();
 
-router.post("/", listingsController.createListing);
-
 router.get("/", listingsController.getListings);
 
 router.get("/:lid", listingsController.getListing);
+
+router.use(checkAuth);
+
+router.post("/", listingsController.createListing);
 
 router.put("/:lid", listingsController.editListing);
 
