@@ -2,10 +2,18 @@ const user = require("../models/user");
 const Users = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
 const createUser = async (req, res, next) => {
   const { firstName, lastName, email, phoneNumber, userName, password } =
     req.body;
+
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ message: "Données saisies invalides valider votre payload" });
+  }
 
   try {
     let existingUser = await Users.findOne({ email: email });
@@ -67,7 +75,9 @@ const login = async (req, res, next) => {
 const getProfile = async (req, res, next) => {
   try {
     const uid = req.params.uid;
-    const user = await Users.findById({ _id: uid });
+    const user = await Users.findById({ _id: uid }).select(
+      "-password -favorites"
+    );
     if (!user) {
       return res.status(404).json({ message: "Utilisateur introuvable" });
     }
@@ -79,6 +89,14 @@ const getProfile = async (req, res, next) => {
 
 const editUser = async (req, res, next) => {
   const { _id, ...newData } = req.body;
+
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ message: "Données saisies invalides valider votre payload" });
+  }
+
   try {
     const updatedUser = await Users.findByIdAndUpdate(_id, newData, {
       new: true,

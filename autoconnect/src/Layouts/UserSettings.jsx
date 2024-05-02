@@ -99,7 +99,6 @@ const UserSettings = () => {
       const resData = await response.json();
       if (!response.ok) {
         setMessage(`Erreur:  ${resData.message}`);
-        throw new Error("Failed to update user data");
       } else {
         setMessage(`Mise à jour réussie des informations sur l'utilisateur`);
       }
