@@ -1,15 +1,17 @@
-import { Button, InputBase, Typography } from "@mui/material";
+import { Button, InputBase, Modal, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../Contexts/AuthContext";
 import EditIcon from "@mui/icons-material/Edit";
 
 const UserSettings = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const auth = useContext(AuthContext);
+  const [openModal, setOpenModal] = useState(false);
   const [userData, setUserData] = useState(null);
   const [disabledEditPhone, setDisabledEditPhone] = useState(true);
-
+  const [disabledEditUsername, setDisabledEditUsername] = useState(true);
   const [disabledEditEmail, setDisabledEditEmail] = useState(true);
   const ariaLabel = { "aria-label": "description" };
 
@@ -47,6 +49,32 @@ const UserSettings = () => {
     setUserData(data);
   };
 
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
+  const deleteAccount = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/users/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
+
+      auth.logout();
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const saveData = async () => {
     try {
       const response = await fetch(
@@ -68,11 +96,78 @@ const UserSettings = () => {
     } finally {
       setDisabledEditEmail(true);
       setDisabledEditPhone(true);
+      setDisabledEditUsername(true);
     }
   };
 
   return (
     <>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="delete-confirmation"
+        aria-describedby="confirm-deletion-of-account"
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            border: "2px solid #000",
+            boxShadow: 24,
+            padding: 20,
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 30,
+            }}
+            id="delete-confirmation"
+            variant="h6"
+            component="h2"
+          >
+            Confirmer la suppression du compte
+          </Typography>
+          <Typography
+            id="confirm-deletion-of-account"
+            sx={{
+              marginTop: 2,
+              fontFamily: "Cooper Black",
+              fontSize: 20,
+            }}
+          >
+            Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne
+            peut pas être annulée.
+          </Typography>
+          <Button
+            sx={{
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 17,
+            }}
+            onClick={() => {
+              deleteAccount();
+            }}
+            color="error"
+          >
+            Delete
+          </Button>
+          <Button
+            sx={{
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 17,
+            }}
+            onClick={handleCloseModal}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal>
       <div
         style={{
           display: "block",
@@ -224,55 +319,106 @@ const UserSettings = () => {
             {"Paramètres du compte"}
           </Typography>
         </div>
-        <Typography
-          sx={{
-            marginTop: 5,
-            marginLeft: "2vw",
-            fontFamily: "Cooper Black",
-            fontWeight: "bold",
-            fontSize: 30,
-          }}
-        >
-          {"Email"}
-          <br />
-          <div style={{ fontSize: 25 }}>
-            {disabledEditEmail ? (
-              <InputBase
-                name="email"
-                disabled
-                sx={{
-                  fontFamily: "Cooper Black",
-                  fontWeight: "bold",
-                  fontSize: 25,
-                  color: "black",
-                  width: "20vw",
-                }}
-                value={userData?.email}
-                inputProps={ariaLabel}
-              />
-            ) : (
-              <InputBase
-                name="email"
-                onChange={handleChange}
-                sx={{
-                  width: "20vw",
-                  fontFamily: "Cooper Black",
-                  fontWeight: "bold",
-                  fontSize: 25,
-                  color: "rgb(255, 91, 97)",
-                }}
-                value={userData?.email}
-                inputProps={ariaLabel}
-              />
-            )}
+        <div style={{ display: "flex" }}>
+          <Typography
+            sx={{
+              marginTop: 5,
+              marginLeft: "2vw",
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 30,
+            }}
+          >
+            {"Email"}
+            <br />
+            <div style={{ fontSize: 25 }}>
+              {disabledEditEmail ? (
+                <InputBase
+                  name="email"
+                  disabled
+                  sx={{
+                    fontFamily: "Cooper Black",
+                    fontWeight: "bold",
+                    fontSize: 25,
+                    color: "black",
+                    width: "20vw",
+                  }}
+                  value={userData?.email}
+                  inputProps={ariaLabel}
+                />
+              ) : (
+                <InputBase
+                  name="email"
+                  onChange={handleChange}
+                  sx={{
+                    width: "20vw",
+                    fontFamily: "Cooper Black",
+                    fontWeight: "bold",
+                    fontSize: 25,
+                    color: "rgb(255, 91, 97)",
+                  }}
+                  value={userData?.email}
+                  inputProps={ariaLabel}
+                />
+              )}
 
-            <Button onClick={() => setDisabledEditEmail(false)}>
-              <EditIcon sx={{ color: "black" }} />
-            </Button>
-          </div>
-        </Typography>
+              <Button onClick={() => setDisabledEditEmail(false)}>
+                <EditIcon sx={{ color: "black" }} />
+              </Button>
+            </div>
+          </Typography>
+          <Typography
+            sx={{
+              marginTop: 5,
+              marginLeft: "2vw",
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 30,
+            }}
+          >
+            {"Nom d'utilisateur"}
+            <br />
+            <div style={{ fontSize: 25 }}>
+              {disabledEditUsername ? (
+                <InputBase
+                  name="userName"
+                  disabled
+                  sx={{
+                    fontFamily: "Cooper Black",
+                    fontWeight: "bold",
+                    fontSize: 25,
+                    color: "black",
+                    width: "20vw",
+                  }}
+                  value={userData?.userName}
+                  inputProps={ariaLabel}
+                />
+              ) : (
+                <InputBase
+                  name="userName"
+                  onChange={handleChange}
+                  sx={{
+                    width: "20vw",
+                    fontFamily: "Cooper Black",
+                    fontWeight: "bold",
+                    fontSize: 25,
+                    color: "rgb(255, 91, 97)",
+                  }}
+                  value={userData?.userName}
+                  inputProps={ariaLabel}
+                />
+              )}
+
+              <Button onClick={() => setDisabledEditUsername(false)}>
+                <EditIcon sx={{ color: "black" }} />
+              </Button>
+            </div>
+          </Typography>
+        </div>
+
         <Typography
           component={Button}
+          onClick={handleOpenModal}
           sx={{
             color: "red",
             marginTop: 5,
@@ -285,7 +431,8 @@ const UserSettings = () => {
         >
           {"Supprimer mon compte"}
         </Typography>
-        {!disabledEditEmail || !disabledEditPhone ? (
+
+        {!disabledEditEmail || !disabledEditPhone || !disabledEditUsername ? (
           <Typography
             component={Button}
             onClick={saveData}

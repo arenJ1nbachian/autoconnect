@@ -89,7 +89,19 @@ const editUser = async (req, res, next) => {
   }
 };
 
-const deleteUser = async (req, res, next) => {};
+const deleteUser = async (req, res, next) => {
+  try {
+    const uid = req.params.uid;
+    const user = await Users.findById({ _id: uid });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await Users.findByIdAndDelete(uid);
+    return res.status(200).json({ message: "User deleted!" });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 exports.createUser = createUser;
 exports.login = login;
