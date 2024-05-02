@@ -38,13 +38,17 @@ const login = async (req, res, next) => {
   try {
     const user = await Users.findOne({ email: email });
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ message: "Nom d'utilisateur ou mot de passe invalide!" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ message: "Nom d'utilisateur ou mot de passe invalide!" });
     }
 
     const token = jwt.sign({ userId: user._id }, "cleSuperSecrete", {
@@ -53,8 +57,10 @@ const login = async (req, res, next) => {
 
     res.status(200).json({ token, uid: user._id });
   } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(500).json({ message: "Failed to log in" });
+    console.error("Erreur de connexion :", error);
+    res
+      .status(500)
+      .json({ message: "Erreur de connexion, veuillez réessayer plus tard" });
   }
 };
 
@@ -63,7 +69,7 @@ const getProfile = async (req, res, next) => {
     const uid = req.params.uid;
     const user = await Users.findById({ _id: uid });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Utilisateur introuvable" });
     }
     res.json(user);
   } catch (error) {
@@ -78,7 +84,7 @@ const editUser = async (req, res, next) => {
       new: true,
     });
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Utilisateur introuvable" });
     }
     res
       .status(200)

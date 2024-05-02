@@ -1,4 +1,10 @@
-import { Button, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Snackbar,
+  SnackbarContent,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import carIcon from "../img/carIcon.png";
 import { useContext, useState } from "react";
@@ -7,6 +13,7 @@ import { AuthContext } from "../Contexts/AuthContext";
 const Login = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -48,14 +55,15 @@ const Login = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
+        const resData = await res.json();
         if (res.ok) {
-          const resData = await res.json();
-
           auth.login(resData.uid, resData.token);
           navigate("/listings");
+        } else {
+          setMessage(`Erreur:  ${resData.message}`);
         }
       } catch (error) {
-        console.log("error", error);
+        setMessage("Erreur: ", error);
       }
     }
   };
@@ -194,6 +202,22 @@ const Login = () => {
               Se connecter
             </Button>
           </form>
+          {message && (
+            <Snackbar
+              autoHideDuration={5000}
+              onClose={() => setMessage("")}
+              open
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              sx={{
+                "&.MuiSnackbar-root": { top: "175px" },
+              }}
+            >
+              <SnackbarContent
+                sx={{ backgroundColor: "rgb(0,74,127)" }}
+                message={message}
+              />
+            </Snackbar>
+          )}
         </div>
       </div>
     </>
