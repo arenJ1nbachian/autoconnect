@@ -202,7 +202,7 @@ const UserSettings = () => {
           >
             {"Données personnelles"}
           </Typography>
-          {!disabledEditEmail || !disabledEditPhone ? (
+          {!disabledEditEmail || !disabledEditPhone || !disabledEditUsername? (
             <Typography
               sx={{
                 marginTop: 5,

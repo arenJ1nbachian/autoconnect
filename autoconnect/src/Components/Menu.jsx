@@ -114,6 +114,61 @@ const Menu = () => {
         </AppBar>
       </Box>
       <SearchBar />
+      <Box sx={{ display: "flex"}}>
+        <AppBar
+          position="fixed"
+          sx={{
+            top:"7vh",
+            zIndex: 2,
+            height: "5vh",
+            boxShadow: "none",
+            backgroundColor: "rgb(0,148,255)",
+          }}
+        >
+          <Toolbar
+            sx={{ padding: "0px !important", minHeight: "40px !important", display:"flex"}}
+          >
+            
+            {auth.isLoggedIn && (
+              <Button
+                component={NavLink}
+                to={`profile/${auth.userId}/listings`}
+                sx={{
+                  marginRight: "auto",
+                  marginLeft: "10vw",
+                  width: "fit-content",
+                  color: "white",
+                  textDecoration: "none",
+                  padding: 0,
+                  fontSize: 18,
+                }}
+              >
+                Mes annonces
+              </Button>
+            )}
+          
+            {auth.isLoggedIn && (
+              <>
+                <Button
+                  component={NavLink}
+                  to={`listing/create`}
+                  sx={{
+                    marginRight: "7vw",
+                    color: "white",
+                    textDecoration: "none",
+                    
+                    padding: 0,
+                    fontSize: 18,
+                  }}
+                >
+                 Créer une annonce
+                </Button>
+                
+              </>
+            )}
+          </Toolbar>
+        </AppBar>
+      </Box>
     </>
   );
 };
