@@ -1,4 +1,11 @@
-import { Button, InputBase, Modal, Typography } from "@mui/material";
+import {
+  Button,
+  InputBase,
+  Modal,
+  Snackbar,
+  SnackbarContent,
+  Typography,
+} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../Contexts/AuthContext";
@@ -8,6 +15,7 @@ const UserSettings = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
+  const [message, setMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [userData, setUserData] = useState(null);
   const [disabledEditPhone, setDisabledEditPhone] = useState(true);
@@ -88,10 +96,15 @@ const UserSettings = () => {
           body: JSON.stringify(userData),
         }
       );
+      const resData = await response.json();
       if (!response.ok) {
+        setMessage(`Erreur:  ${resData.message}`);
         throw new Error("Failed to update user data");
+      } else {
+        setMessage(`Mise à jour réussie des informations sur l'utilisateur`);
       }
     } catch (error) {
+      setMessage(`Erreur:  ${error}`);
       console.log(error);
     } finally {
       setDisabledEditEmail(true);
@@ -202,7 +215,7 @@ const UserSettings = () => {
           >
             {"Données personnelles"}
           </Typography>
-          {!disabledEditEmail || !disabledEditPhone || !disabledEditUsername? (
+          {!disabledEditEmail || !disabledEditPhone || !disabledEditUsername ? (
             <Typography
               sx={{
                 marginTop: 5,
@@ -450,6 +463,22 @@ const UserSettings = () => {
           </Typography>
         ) : (
           <></>
+        )}
+        {message && (
+          <Snackbar
+            autoHideDuration={5000}
+            onClose={() => setMessage("")}
+            open
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            sx={{
+              "&.MuiSnackbar-root": { top: "150px" },
+            }}
+          >
+            <SnackbarContent
+              sx={{ backgroundColor: "rgb(0,74,127)" }}
+              message={message}
+            />
+          </Snackbar>
         )}
       </div>
     </>

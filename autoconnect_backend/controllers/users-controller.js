@@ -86,12 +86,15 @@ const editUser = async (req, res, next) => {
     if (!updatedUser) {
       return res.status(404).json({ message: "Utilisateur introuvable" });
     }
-    res
-      .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+    res.status(200).json({
+      message: "Mise à jour de l'utilisateur réussie",
+      user: updatedUser,
+    });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ message: "Failed to update user" });
+    console.error("Erreur de mise à jour de l'utilisateur :", error);
+    res
+      .status(500)
+      .json({ message: "Échec de la mise à jour de l'utilisateur" });
   }
 };
 
