@@ -65,6 +65,7 @@ const UserListings = () => {
         style={{
           display: "flex",
           flexDirection: "column",
+          overflow: "auto",
           marginLeft: "auto",
           marginRight: "auto",
           marginTop: "20vh",
@@ -195,6 +196,21 @@ const UserListings = () => {
           </div>
         ))}
       </div>
+      <Button
+        component={NavLink}
+        to={`/listing/create`}
+        sx={{
+          fontFamily: "Cooper Black",
+          fontWeight: "bold",
+          fontSize: 23,
+          color: "rgb(0,74,127)",
+          marginTop: "3vh",
+          marginLeft: "4vw",
+          textTransform: "none",
+        }}
+      >
+        Vous souhaitez ajouter une nouvelle annonce?
+      </Button>
     </>
   );
 };
