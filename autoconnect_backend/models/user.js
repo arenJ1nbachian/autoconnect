@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema({
   favorites: [
     { type: mongoose.Types.ObjectId, required: false, ref: "Listings" },
   ],
+  listings: [
+    { type: mongoose.Types.ObjectId, required: false, ref: "Listings" },
+  ],
 });
 
 module.exports = mongoose.model("Users", userSchema);

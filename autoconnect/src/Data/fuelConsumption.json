@@ -1,0 +1,9 @@
+{
+  "fuelConsumption": [
+    "Moins de 4 L/100 km",
+    "4 à 6 L/100 km",
+    "6 à 8 L/100 km",
+    "8 à 10 L/100 km",
+    "Plus de 10 L/100 km"
+  ]
+}

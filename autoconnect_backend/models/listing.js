@@ -13,7 +13,11 @@ const listingSchema = new mongoose.Schema({
   price: { type: String, required: true },
   km: { type: String, required: true },
   color: { type: String, required: true },
-  img: { type: String, required: false },
+  images: [
+    {
+      path: { type: String, required: false },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Listings", listingSchema);
