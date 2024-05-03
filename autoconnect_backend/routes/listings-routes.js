@@ -7,7 +7,6 @@ const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "./uploads"),
   filename: (req, file, cb) => {
-    console.log(file);
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
@@ -21,6 +20,8 @@ router.get("/:lid", listingsController.getListing);
 router.use(checkAuth);
 
 router.post("/", upload.array("images", 10), listingsController.createListing);
+
+router.get("/userListing/:uid", listingsController.getListingsByUserId);
 
 router.put("/:lid", listingsController.editListing);
 
