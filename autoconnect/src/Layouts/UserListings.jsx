@@ -158,7 +158,10 @@ const UserListings = () => {
             >
               <Button
                 component={NavLink}
-                to={`/listing/edit/${listing._id}`}
+                to={{
+                  pathname: `/listing/create`,
+                  state: { editData: listing._id },
+                }}
                 sx={{
                   color: "white",
                   backgroundColor: "rgb(0,148,255)",

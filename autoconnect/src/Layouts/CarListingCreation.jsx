@@ -1,3 +1,4 @@
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -10,9 +11,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { AuthContext } from "../Contexts/AuthContext";
 import carBrandsData from "../Data/carBrandsData.json";
 import carBrandsModelsData from "../Data/carBrandsModelsData.json";
-import { useContext, useState } from "react";
 import years from "../Data/carBrandYears.json";
 import bodyType from "../Data/carBodyType.json";
 import carTransmission from "../Data/carTransmission.json";
@@ -21,51 +22,82 @@ import seats from "../Data/seatNumbers.json";
 import fuel from "../Data/fuelTypes.json";
 import fuelCons from "../Data/fuelConsumption.json";
 import carColors from "../Data/carColors.json";
-import { AuthContext } from "../Contexts/AuthContext";
 
 const CarListingCreation = () => {
   const auth = useContext(AuthContext);
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedBody, setSelectedBody] = useState("");
-  const [selectedTransmission, setSelectedTransmission] = useState("");
-  const [selectedTraction, setSelectedTraction] = useState("");
-  const [selectedSeats, setSelectedSeats] = useState("");
-  const [selectedFuelType, setSelectedFuelType] = useState("");
-  const [selectedFuelCons, setSelectedFuelCons] = useState("");
-  const [price, setPrice] = useState("");
-  const [km, setKm] = useState("");
-  const [selectedCarColor, setSelectedCarColor] = useState("");
-  const [carImages, setCarImages] = useState([]);
+  const [formData, setFormData] = useState({
+    make: "",
+    model: "",
+    year: "",
+    body: "",
+    transmission: "",
+    traction: "",
+    seats: "",
+    fuelType: "",
+    fuelCons: "",
+    price: "",
+    km: "",
+    color: "",
+    carImages: [],
+  });
 
   const [models, setModels] = useState([]);
+
   const [currentStep, setCurrentStep] = useState(1);
 
-  const addListing = async () => {
-    const formData = new FormData();
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    console.log(name, value);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+    if (name === "make") {
+      setModels(carBrandsModelsData.carModelsByBrand[value]);
+    }
+  };
 
-    formData.append("user", auth.userId);
-    formData.append("make", selectedBrand);
-    formData.append("model", selectedModel);
-    formData.append("year", selectedYear);
-    formData.append("body", selectedBody);
-    formData.append("transmission", selectedTransmission);
-    formData.append("traction", selectedTraction);
-    formData.append("seats", selectedSeats);
-    formData.append("fuelType", selectedFuelType);
-    formData.append("fuelCons", selectedFuelCons);
-    formData.append("price", price);
-    formData.append("km", km);
-    formData.append("color", selectedCarColor);
-    carImages.forEach((img) => {
-      formData.append("images", img);
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const newImages = Array.from(event.target.files);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      carImages: [...prevFormData.carImages, ...newImages],
+    }));
+  };
+
+  const removeImage = (index) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      carImages: prevFormData.carImages.filter((_, i) => i !== index),
+    }));
+    const inputElement = document.getElementById("file-input");
+    if (inputElement) {
+      inputElement.value = null;
+    }
+  };
+
+  const addListing = async () => {
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("user", auth.userId);
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key !== "carImages") {
+        formDataToSubmit.append(key, value);
+      }
+    });
+    formData.carImages.forEach((img) => {
+      formDataToSubmit.append("images", img);
     });
 
     try {
       const response = await fetch("http://localhost:5000/api/cars/", {
         method: "POST",
-        body: formData,
+        body: formDataToSubmit,
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -79,71 +111,6 @@ const CarListingCreation = () => {
       }
     } catch (error) {
       console.error("Error creating listing:", error);
-    }
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case "brand":
-        setSelectedBrand(value);
-        setModels(carBrandsModelsData.carModelsByBrand[value]);
-        break;
-      case "model":
-        setSelectedModel(value);
-        break;
-      case "year":
-        setSelectedYear(value);
-        break;
-      case "body":
-        setSelectedBody(value);
-        break;
-      case "transmission":
-        setSelectedTransmission(value);
-        break;
-      case "traction":
-        setSelectedTraction(value);
-        break;
-      case "seats":
-        setSelectedSeats(value);
-        break;
-      case "fuelType":
-        setSelectedFuelType(value);
-        break;
-      case "fuelCons":
-        setSelectedFuelCons(value);
-        break;
-      case "price":
-        setPrice(value);
-        break;
-      case "km":
-        setKm(value);
-        break;
-      case "carColor":
-        setSelectedCarColor(value);
-        break;
-      default:
-    }
-  };
-
-  console.log(carImages);
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleImageChange = (event) => {
-    const newImages = Array.from(event.target.files);
-    setCarImages((prevImages) => [...prevImages, ...newImages]);
-  };
-
-  const removeImage = (index) => {
-    setCarImages((prevImages) => prevImages.filter((img, i) => i !== index));
-    const inputElement = document.getElementById("file-input");
-    if (inputElement) {
-      inputElement.value = null;
     }
   };
 
@@ -183,8 +150,8 @@ const CarListingCreation = () => {
               <InputLabel id="brand-label">Marque</InputLabel>
               <Select
                 labelId="brand-label"
-                name="brand"
-                value={selectedBrand}
+                name="make"
+                value={formData.make}
                 label="Marque"
                 onChange={handleChange}
                 sx={{
@@ -208,7 +175,7 @@ const CarListingCreation = () => {
                 labelId="model-label"
                 name="model"
                 label="Modèle"
-                value={selectedModel}
+                value={formData.model}
                 onChange={handleChange}
               >
                 {models.map((brand) => (
@@ -224,7 +191,7 @@ const CarListingCreation = () => {
                 labelId="year-label"
                 name="year"
                 label="Année"
-                value={selectedYear}
+                value={formData.year}
                 onChange={handleChange}
               >
                 {years.years.map((year) => (
@@ -250,7 +217,7 @@ const CarListingCreation = () => {
               <Select
                 labelId="body-label"
                 name="body"
-                value={selectedBody}
+                value={formData.body}
                 label="Marque"
                 onChange={handleChange}
                 sx={{
@@ -273,7 +240,7 @@ const CarListingCreation = () => {
               <Select
                 labelId="transmission-label"
                 name="transmission"
-                value={selectedTransmission}
+                value={formData.transmission}
                 onChange={handleChange}
                 label="Modèle"
               >
@@ -291,7 +258,7 @@ const CarListingCreation = () => {
                 name="traction"
                 onChange={handleChange}
                 label="Année"
-                value={selectedTraction}
+                value={formData.traction}
               >
                 {carTraction.tractionTypes.map((traction) => (
                   <MenuItem key={traction} value={traction}>
@@ -318,7 +285,7 @@ const CarListingCreation = () => {
               <Select
                 labelId="seat-label"
                 name="seats"
-                value={selectedSeats}
+                value={formData.seats}
                 label="Nombre de sièges"
                 onChange={handleChange}
                 sx={{
@@ -341,7 +308,7 @@ const CarListingCreation = () => {
               <Select
                 labelId="fuelType-label"
                 name="fuelType"
-                value={selectedFuelType}
+                value={formData.fuelType}
                 onChange={handleChange}
                 label="Type de carburant"
               >
@@ -361,7 +328,7 @@ const CarListingCreation = () => {
                 name="fuelCons"
                 onChange={handleChange}
                 label="Consommation de Carburant"
-                value={selectedFuelCons}
+                value={formData.fuelCons}
               >
                 {fuelCons.fuelConsumption.map((fuelCons) => (
                   <MenuItem key={fuelCons} value={fuelCons}>
@@ -384,7 +351,7 @@ const CarListingCreation = () => {
             </Typography>
             <TextField
               fullWidth
-              value={price}
+              value={formData.price}
               onChange={handleChange}
               margin="normal"
               name="price"
@@ -393,7 +360,7 @@ const CarListingCreation = () => {
             />
             <TextField
               fullWidth
-              value={km}
+              value={formData.km}
               onChange={handleChange}
               margin="normal"
               name="km"
@@ -404,10 +371,10 @@ const CarListingCreation = () => {
               <InputLabel id="carColor-label">Couleur</InputLabel>
               <Select
                 labelId="carColor-label"
-                name="carColor"
+                name="color"
                 onChange={handleChange}
                 label="Couleur"
-                value={selectedCarColor}
+                value={formData.color}
               >
                 {carColors.carColors.map((color) => (
                   <MenuItem key={color} value={color}>
@@ -455,7 +422,7 @@ const CarListingCreation = () => {
               alignItems="center"
               justifyContent="center"
             >
-              {carImages.map((img, index) => (
+              {formData.carImages.map((img, index) => (
                 <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
                   <Box
                     sx={{
