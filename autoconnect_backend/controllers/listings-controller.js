@@ -73,6 +73,31 @@ const getListingsByUserId = async (req, res, next) => {
   }
 };
 
+const getFavoritesByUserId = async (req, res, next) => {
+  try {
+    const userId = req.params.uid;
+    const userWithListings = await Users.findById(userId);
+
+    if (!userWithListings) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+    const userListings = await Listings.find({
+      _id: { $in: userWithListings.favorites },
+    }).select("make model year");
+
+    if (!userListings.length) {
+      return res.status(404).json({
+        message: "Aucune annonce favoris  n'a été trouvée pour cet utilisateur",
+      });
+    }
+    res.json(userListings);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: " Erreur dans la recherche d'annonces favoris" });
+  }
+};
+
 const getListings = async (req, res, next) => {};
 
 const getListing = async (req, res, next) => {
@@ -167,6 +192,7 @@ const deleteListing = async (req, res, next) => {
 exports.createListing = createListing;
 exports.getListings = getListings;
 exports.getListingsByUserId = getListingsByUserId;
+exports.getFavoritesByUserId = getFavoritesByUserId;
 exports.getListing = getListing;
 exports.editListing = editListing;
 exports.deleteListing = deleteListing;

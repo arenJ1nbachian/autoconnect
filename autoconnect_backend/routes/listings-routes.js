@@ -13,6 +13,8 @@ router.post("/", listingsController.createListing);
 
 router.get("/userListing/:uid", listingsController.getListingsByUserId);
 
+router.get("/userFavorite/:uid", listingsController.getFavoritesByUserId);
+
 router.patch("/:lid", listingsController.editListing);
 
 router.delete("/:lid", listingsController.deleteListing);

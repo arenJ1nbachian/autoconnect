@@ -75,9 +75,7 @@ const login = async (req, res, next) => {
 const getProfile = async (req, res, next) => {
   try {
     const uid = req.params.uid;
-    const user = await Users.findById({ _id: uid }).select(
-      "-password -favorites"
-    );
+    const user = await Users.findById({ _id: uid }).select("-password ");
     if (!user) {
       return res.status(404).json({ message: "Utilisateur introuvable" });
     }
