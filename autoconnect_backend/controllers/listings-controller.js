@@ -17,13 +17,8 @@ const createListing = async (req, res, next) => {
       price,
       km,
       color,
+      images,
     } = req.body;
-
-    const files = req.files;
-
-    const images = files.map((file) => ({
-      path: file.path,
-    }));
 
     const listing = new Listings({
       make,
@@ -40,7 +35,6 @@ const createListing = async (req, res, next) => {
       color,
       images: images,
     });
-
     const savedListing = await listing.save();
 
     await Users.findByIdAndUpdate(user, {
@@ -81,9 +75,73 @@ const getListingsByUserId = async (req, res, next) => {
 
 const getListings = async (req, res, next) => {};
 
-const getListing = async (req, res, next) => {};
+const getListing = async (req, res, next) => {
+  const { lid } = req.params;
+  console.log(lid);
+  try {
+    const listing = await Listings.findById(lid);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+    res.json(listing);
+  } catch (error) {
+    next(error);
+  }
+};
 
-const editListing = async (req, res, next) => {};
+const editListing = async (req, res, next) => {
+  const { lid } = req.params;
+  const {
+    make,
+    model,
+    year,
+    body,
+    transmission,
+    traction,
+    seats,
+    fuelType,
+    fuelCons,
+    price,
+    km,
+    color,
+    images,
+  } = req.body;
+
+  try {
+    const updatedListing = await Listings.findByIdAndUpdate(
+      lid,
+      {
+        make,
+        model,
+        year,
+        body,
+        transmission,
+        traction,
+        seats,
+        fuelType,
+        fuelCons,
+        price,
+        km,
+        color,
+        images,
+      },
+      { new: true }
+    );
+
+    if (!updatedListing) {
+      return res.status(404).json({ message: "L'annonce n'a pas été trouvée" });
+    }
+
+    res.status(200).json({
+      message: "L'annonce a été modifiée avec succès",
+      listing: updatedListing,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la modification d'une annonce" });
+  }
+};
 
 const deleteListing = async (req, res, next) => {
   try {

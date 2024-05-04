@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -23,7 +23,7 @@ import fuel from "../Data/fuelTypes.json";
 import fuelCons from "../Data/fuelConsumption.json";
 import carColors from "../Data/carColors.json";
 
-const CarListingCreation = () => {
+const CarListingCreation = ({ listingId }) => {
   const auth = useContext(AuthContext);
   const [formData, setFormData] = useState({
     make: "",
@@ -38,8 +38,36 @@ const CarListingCreation = () => {
     price: "",
     km: "",
     color: "",
-    carImages: [],
+    images: [],
   });
+
+  useEffect(() => {
+    if (listingId) {
+      const getUserListings = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/cars/${listingId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to retrieve listing");
+          }
+          const data = await response.json();
+          setModels(carBrandsModelsData.carModelsByBrand[data.make]);
+          setFormData(data);
+        } catch (error) {
+          console.error("Error retrieving listing:", error);
+        }
+      };
+      getUserListings();
+    }
+  }, [listingId, auth.token]);
 
   const [models, setModels] = useState([]);
 
@@ -47,7 +75,7 @@ const CarListingCreation = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -65,16 +93,29 @@ const CarListingCreation = () => {
 
   const handleImageChange = (event) => {
     const newImages = Array.from(event.target.files);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      carImages: [...prevFormData.carImages, ...newImages],
-    }));
+    const newImageStrings = [];
+
+    newImages.forEach((image) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newImageStrings.push(reader.result);
+
+        if (newImageStrings.length === newImages.length) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            images: [...prevFormData.images, ...newImageStrings],
+          }));
+        }
+      };
+
+      reader.readAsDataURL(image);
+    });
   };
 
   const removeImage = (index) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      carImages: prevFormData.carImages.filter((_, i) => i !== index),
+      images: prevFormData.images.filter((_, i) => i !== index),
     }));
     const inputElement = document.getElementById("file-input");
     if (inputElement) {
@@ -83,25 +124,45 @@ const CarListingCreation = () => {
   };
 
   const addListing = async () => {
-    const formDataToSubmit = new FormData();
-    formDataToSubmit.append("user", auth.userId);
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key !== "carImages") {
-        formDataToSubmit.append(key, value);
-      }
-    });
-    formData.carImages.forEach((img) => {
-      formDataToSubmit.append("images", img);
-    });
-
     try {
       const response = await fetch("http://localhost:5000/api/cars/", {
         method: "POST",
-        body: formDataToSubmit,
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${auth.token}`,
         },
+        body: JSON.stringify({
+          user: auth.userId,
+          ...formData,
+        }),
       });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Listing created:", result);
+      } else {
+        throw new Error("Failed to create listing");
+      }
+    } catch (error) {
+      console.error("Error creating listing:", error);
+    }
+  };
+
+  const modifyListing = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/cars/${listingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: JSON.stringify({
+            ...formData,
+          }),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -422,31 +483,33 @@ const CarListingCreation = () => {
               alignItems="center"
               justifyContent="center"
             >
-              {formData.carImages.map((img, index) => (
-                <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <img
-                      src={URL.createObjectURL(img)}
-                      alt={`Car ${index}`}
-                      style={{ maxWidth: "100%", maxHeight: "150px" }}
-                    />
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => removeImage(index)}
+              {console.log(formData.images)}
+              {formData.images !== undefined &&
+                formData?.images.map((img, index) => (
+                  <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
                     >
-                      Remove
-                    </Button>
-                  </Box>
-                </Grid>
-              ))}
+                      <img
+                        src={img}
+                        alt={`Car ${index}`}
+                        style={{ maxWidth: "100%", maxHeight: "150px" }}
+                      />
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => removeImage(index)}
+                      >
+                        Remove
+                      </Button>
+                    </Box>
+                  </Grid>
+                ))}
             </Grid>
           </>
         )}
@@ -461,7 +524,7 @@ const CarListingCreation = () => {
           <Button variant="outlined" color="primary" onClick={handleBack}>
             Précédent
           </Button>
-          {currentStep !== 5 ? (
+          {currentStep !== 5 && (
             <>
               <Button
                 variant="contained"
@@ -471,10 +534,22 @@ const CarListingCreation = () => {
                 Suivant
               </Button>
             </>
-          ) : (
+          )}
+          {currentStep === 5 && listingId && (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={modifyListing}
+              >
+                Finaliser
+              </Button>
+            </>
+          )}
+          {currentStep === 5 && listingId === undefined && (
             <>
               <Button variant="contained" color="primary" onClick={addListing}>
-                Finaliser
+                Publier l'annonce
               </Button>
             </>
           )}
@@ -483,5 +558,4 @@ const CarListingCreation = () => {
     </Container>
   );
 };
-
 export default CarListingCreation;

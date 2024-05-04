@@ -5,8 +5,12 @@ const uri = "mongodb://localhost:27017/Aren";
 const usersRoutes = require("./routes/users-routes");
 const listingRoutes = require("./routes/listings-routes");
 const textingRoutes = require("./routes/texting-routes");
+const bodyParser = require("body-parser");
 
 const app = express();
+
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(express.json());
 
