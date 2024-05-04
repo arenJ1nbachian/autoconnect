@@ -1,1 +1,10 @@
-{ "fuelTypes": ["Essence", "Diesel", "Électrique", "Hybride", "Hydrogène"] }
+{
+  "fuelTypes": [
+    "Essence",
+    "Diesel",
+    "Électrique",
+    "Hybride",
+    "Hydrogène",
+    "Autre"
+  ]
+}
