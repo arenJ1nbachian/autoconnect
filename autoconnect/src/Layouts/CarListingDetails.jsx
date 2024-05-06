@@ -7,6 +7,14 @@ import carIcon from "../img/default_car_image.png";
 const CarListingDetails = () => {
   const { listingId } = useParams();
   const auth = useContext(AuthContext);
+  const [showNumber, setShowNumber] = useState(false);
+
+  const [userPublicInfo, setUserPublicInfo] = useState({
+    firstName: "",
+    lastName: "",
+    userName: "",
+    phoneNumber: "",
+  });
 
   const [listing, setListing] = useState({
     year: "",
@@ -21,6 +29,7 @@ const CarListingDetails = () => {
     fuelCons: "",
     images: [],
     color: "",
+    userId: "",
   });
 
   useEffect(() => {
@@ -39,7 +48,6 @@ const CarListingDetails = () => {
 
         if (response.ok) {
           const result = await response.json();
-          console.log("Listing created:", result);
           setListing(result);
         } else {
           throw new Error("Failed to create listing");
@@ -48,8 +56,36 @@ const CarListingDetails = () => {
         console.error("Error fetching listing:", err);
       }
     };
+
     getListing();
   }, [listingId, auth.token]);
+
+  useEffect(() => {
+    const getSeller = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/users/seller/${listing.userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setUserPublicInfo(result);
+        } else {
+          throw new Error("Failed to fetch seller");
+        }
+      } catch (err) {
+        console.error("Error fetching seller:", err);
+      }
+    };
+    getSeller();
+  }, [listing, auth.token]);
 
   return (
     <>
@@ -205,21 +241,37 @@ const CarListingDetails = () => {
                   fontFamily: "Cooper Black, sans-serif",
                 }}
               >
-                Aren Jinbachian
+                {userPublicInfo.firstName} {userPublicInfo.lastName} <br />{" "}
+                {userPublicInfo.userName}
               </Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#0066cc",
-                  color: "white",
-                  borderRadius: "15px",
-                  padding: "10px",
-                  width: "100%",
-                  marginBottom: "10px",
-                }}
-              >
-                Afficher le numéro de téléphone
-              </Button>
+              {showNumber === false ? (
+                <Button
+                  onClick={() => setShowNumber(true)}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#0066cc",
+                    color: "white",
+                    borderRadius: "15px",
+                    padding: "10px",
+                    width: "100%",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Afficher le numéro de téléphone
+                </Button>
+              ) : (
+                <Typography
+                  sx={{
+                    color: "#0066cc",
+                    fontSize: "28px",
+                    marginBottom: "15px",
+                    fontFamily: "Cooper Black, sans-serif",
+                  }}
+                >
+                  {userPublicInfo.phoneNumber}
+                </Typography>
+              )}
+
               <Typography
                 variant="h6"
                 sx={{

@@ -17,6 +17,8 @@ router.post(
 
 router.post("/login", usersController.login);
 
+router.get("/seller/:uid", usersController.getSellerInfo);
+
 router.use(checkAuth);
 
 router.get("/:uid", usersController.getProfile);

@@ -14,6 +14,7 @@ const listingSchema = new mongoose.Schema({
   km: { type: String, required: true },
   color: { type: String, required: true },
   images: [{ type: String, required: false }],
+  userId: { type: mongoose.Types.ObjectId, required: false, ref: "Users" },
 });
 
 module.exports = mongoose.model("Listings", listingSchema);

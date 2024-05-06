@@ -72,6 +72,21 @@ const login = async (req, res, next) => {
   }
 };
 
+const getSellerInfo = async (req, res, next) => {
+  try {
+    const uid = req.params.uid;
+    const user = await Users.findById({ _id: uid }).select(
+      "-password -email -password -favorites -listings"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getProfile = async (req, res, next) => {
   try {
     const uid = req.params.uid;
@@ -133,3 +148,4 @@ exports.login = login;
 exports.getProfile = getProfile;
 exports.editUser = editUser;
 exports.deleteUser = deleteUser;
+exports.getSellerInfo = getSellerInfo;

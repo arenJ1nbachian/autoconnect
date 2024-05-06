@@ -21,6 +21,7 @@ const createListing = async (req, res, next) => {
     } = req.body;
 
     const listing = new Listings({
+      userId: user,
       make,
       model,
       year,
@@ -102,7 +103,6 @@ const getListings = async (req, res, next) => {};
 
 const getListing = async (req, res, next) => {
   const { lid } = req.params;
-  console.log(lid);
   try {
     const listing = await Listings.findById(lid);
     if (!listing) {
