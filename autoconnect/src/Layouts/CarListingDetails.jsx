@@ -391,6 +391,7 @@ const CarListingDetails = () => {
                         )}
                         {index === 2 && listing.images.length <= 4 && (
                           <img
+                            onClick={() => handleOpenModal(index + 1)}
                             key={index}
                             src={img}
                             alt={`Side ${index + 1}`}
