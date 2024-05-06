@@ -1,13 +1,24 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../Contexts/AuthContext";
-import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import carIcon from "../img/default_car_image.png";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
 const CarListingDetails = () => {
   const { listingId } = useParams();
   const auth = useContext(AuthContext);
   const [showNumber, setShowNumber] = useState(false);
+  const [clickedIndex, setClickIndex] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
 
   const [userPublicInfo, setUserPublicInfo] = useState({
     firstName: "",
@@ -31,6 +42,12 @@ const CarListingDetails = () => {
     color: "",
     userId: "",
   });
+
+  const handleOpenModal = (index) => {
+    setClickIndex(index);
+    setOpenModal(true);
+  };
+  const handleCloseModal = () => setOpenModal(false);
 
   useEffect(() => {
     const getListing = async () => {
@@ -84,11 +101,98 @@ const CarListingDetails = () => {
         console.error("Error fetching seller:", err);
       }
     };
-    getSeller();
+
+    if (listing.userId) {
+      getSeller();
+    }
   }, [listing, auth.token]);
 
   return (
     <>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="fullscreen-view"
+        aria-describedby="fullscreen-view-of-picture"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 30,
+            }}
+            id="fullscreen-view"
+            variant="h6"
+            component="h2"
+          >
+            Affichage en plein écran
+          </Typography>
+          <img
+            src={listing.images[clickedIndex] || carIcon}
+            alt="Main Car Fullscreen"
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "cover",
+            }}
+          />
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button
+              sx={{
+                fontFamily: "Cooper Black",
+                fontWeight: "bold",
+                fontSize: 17,
+              }}
+              onClick={() => {
+                if (clickedIndex > 0) {
+                  setClickIndex(clickedIndex - 1);
+                }
+              }}
+            >
+              <ArrowBack />
+            </Button>
+            <Button
+              sx={{
+                fontFamily: "Cooper Black",
+                fontWeight: "bold",
+                fontSize: 17,
+              }}
+              onClick={() => {
+                if (clickedIndex < listing.images.length - 1) {
+                  setClickIndex(clickedIndex + 1);
+                }
+              }}
+            >
+              <ArrowForward />
+            </Button>
+          </Box>
+          <Button
+            sx={{
+              fontFamily: "Cooper Black",
+              fontWeight: "bold",
+              fontSize: 17,
+            }}
+            onClick={handleCloseModal}
+          >
+            Fermer
+          </Button>
+        </Box>
+      </Modal>
       <Box
         sx={{
           overflow: "hidden",
@@ -124,6 +228,7 @@ const CarListingDetails = () => {
             >
               {listing.images.length === 0 && (
                 <img
+                  onClick={() => handleOpenModal(0)}
                   src={carIcon}
                   alt="Main Car "
                   style={{
@@ -138,6 +243,7 @@ const CarListingDetails = () => {
               {listing.images.length > 0 && (
                 <>
                   <img
+                    onClick={() => handleOpenModal(0)}
                     src={listing.images ? listing.images[0] : ""}
                     alt="Main Car "
                     style={{
@@ -161,6 +267,7 @@ const CarListingDetails = () => {
                       <>
                         {index !== 2 && (
                           <img
+                            onClick={() => handleOpenModal(index + 1)}
                             key={index}
                             src={img}
                             alt={`Side ${index + 1}`}
@@ -174,6 +281,7 @@ const CarListingDetails = () => {
                         )}
                         {index === 2 && listing.images.length > 4 && (
                           <Box
+                            onClick={() => handleOpenModal(index + 1)}
                             sx={{
                               position: "relative",
                               width: "180px",
