@@ -233,17 +233,28 @@ const CarListingDetails = () => {
                 boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <Typography
-                sx={{
-                  color: "#0066cc",
-                  fontSize: "28px",
-                  marginBottom: "15px",
-                  fontFamily: "Cooper Black, sans-serif",
-                }}
-              >
-                {userPublicInfo.firstName} {userPublicInfo.lastName} <br />{" "}
-                {userPublicInfo.userName}
-              </Typography>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  sx={{
+                    color: "#0066cc",
+                    fontSize: "28px",
+                    fontFamily: "Cooper Black, sans-serif",
+                  }}
+                >
+                  {userPublicInfo.firstName} {userPublicInfo.lastName}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    color: "#0066cc",
+                    margin: "auto",
+                    fontSize: "18px",
+                    fontFamily: "Cooper Black, sans-serif",
+                  }}
+                >
+                  @{userPublicInfo.userName}
+                </Typography>
+              </div>
               {showNumber === false ? (
                 <Button
                   onClick={() => setShowNumber(true)}
@@ -252,9 +263,9 @@ const CarListingDetails = () => {
                     backgroundColor: "#0066cc",
                     color: "white",
                     borderRadius: "15px",
+                    marginBottom: "10px",
                     padding: "10px",
                     width: "100%",
-                    marginBottom: "10px",
                   }}
                 >
                   Afficher le numéro de téléphone
@@ -264,11 +275,11 @@ const CarListingDetails = () => {
                   sx={{
                     color: "#0066cc",
                     fontSize: "28px",
-                    marginBottom: "15px",
+                    marginBottom: "10px",
                     fontFamily: "Cooper Black, sans-serif",
                   }}
                 >
-                  {userPublicInfo.phoneNumber}
+                  -{userPublicInfo.phoneNumber}
                 </Typography>
               )}
 
