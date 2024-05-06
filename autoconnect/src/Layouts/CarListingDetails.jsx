@@ -369,7 +369,6 @@ const CarListingDetails = () => {
                               border: "2px solid #0066cc",
                               backgroundImage: `url(${listing.images[3]})`,
                               backgroundSize: "cover",
-                              backgroundPosition: "center",
                             }}
                           >
                             <Box

@@ -18,7 +18,7 @@ const Listings = () => {
       >
         <Button
           component={NavLink}
-          to="/listings/details/66392f32668bc2bf70de6746"
+          to="/listings/details/6638532e581bd69f44b83434"
         >
           Direct to hyundai add
         </Button>

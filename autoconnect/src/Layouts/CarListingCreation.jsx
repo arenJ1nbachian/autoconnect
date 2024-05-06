@@ -486,19 +486,19 @@ const CarListingCreation = ({ listingId }) => {
               {console.log(formData.images)}
               {formData.images !== undefined &&
                 formData?.images.map((img, index) => (
-                  <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                  <Grid item key={index} xs={12} sm={6} md={4} lg={2}>
                     <Box
                       sx={{
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        gap: 1,
+                        gap: "1px",
                       }}
                     >
                       <img
                         src={img}
                         alt={`Car ${index}`}
-                        style={{ maxWidth: "100%", maxHeight: "150px" }}
+                        style={{ maxWidth: "100%", maxHeight: "80px" }}
                       />
                       <Button
                         variant="contained"
