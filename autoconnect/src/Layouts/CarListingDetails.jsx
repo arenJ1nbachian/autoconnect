@@ -265,22 +265,22 @@ const CarListingDetails = () => {
           padding: "20px 0",
         }}
       >
-        {auth.token && (
-          <Typography
-            sx={{
-              fontFamily: "Cooper Black, sans-serif",
-              display: "flex",
-              textAlign: "left",
-              alignItems: "center",
-              fontSize: "40px",
-              color: "#0066cc",
-              marginBottom: "20px",
-              marginLeft: "14vw",
-              transform: "scaleX(1.4)",
-            }}
-          >
-            {listing.year} {listing.make} {listing.model}
-            {favorite === true ? (
+        <Typography
+          sx={{
+            fontFamily: "Cooper Black, sans-serif",
+            display: "flex",
+            textAlign: "left",
+            alignItems: "center",
+            fontSize: "40px",
+            color: "#0066cc",
+            marginBottom: "20px",
+            marginLeft: "14vw",
+            transform: "scaleX(1.4)",
+          }}
+        >
+          {listing.year} {listing.make} {listing.model}
+          {auth.token &&
+            (favorite === true ? (
               <Button onClick={() => handleFavorite()}>
                 <BookmarkIcon sx={{ fontSize: 50, textAlign: "center" }} />
               </Button>
@@ -290,9 +290,8 @@ const CarListingDetails = () => {
                   sx={{ fontSize: 50, textAlign: "center" }}
                 />
               </Button>
-            )}
-          </Typography>
-        )}
+            ))}
+        </Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={8}>
