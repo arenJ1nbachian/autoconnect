@@ -40,6 +40,44 @@ const createUser = async (req, res, next) => {
   }
 };
 
+const setFavorite = async (req, res, next) => {
+  const { lid } = req.params;
+  const { uid } = req.body;
+
+  if (!lid || !uid) {
+    return res.status(400).json({ error: "Invalid request" });
+  }
+
+  try {
+    await Users.findByIdAndUpdate(uid, {
+      $push: { favorites: lid },
+    });
+    res.status(200).json({ message: "Favorite Added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to add favorite" });
+  }
+};
+
+const removeFavorite = async (req, res, next) => {
+  const { lid } = req.params;
+  const { uid } = req.body;
+
+  if (!lid || !uid) {
+    return res.status(400).json({ error: "Invalid request" });
+  }
+
+  try {
+    await Users.findByIdAndUpdate(uid, {
+      $pull: { favorites: lid },
+    });
+    res.status(200).json({ message: "Favorite deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete favorite" });
+  }
+};
+
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -149,3 +187,5 @@ exports.getProfile = getProfile;
 exports.editUser = editUser;
 exports.deleteUser = deleteUser;
 exports.getSellerInfo = getSellerInfo;
+exports.setFavorite = setFavorite;
+exports.removeFavorite = removeFavorite;

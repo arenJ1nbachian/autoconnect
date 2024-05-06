@@ -31,6 +31,10 @@ router.patch(
   usersController.editUser
 );
 
+router.patch("/addFavorite/:lid", usersController.setFavorite);
+
+router.patch("/removeFavorite/:lid", usersController.removeFavorite);
+
 router.delete("/:uid", usersController.deleteUser);
 
 module.exports = router;

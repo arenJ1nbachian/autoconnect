@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import carIcon from "../img/default_car_image.png";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 const CarListingDetails = () => {
   const { listingId } = useParams();
@@ -19,7 +21,7 @@ const CarListingDetails = () => {
   const [showNumber, setShowNumber] = useState(false);
   const [clickedIndex, setClickIndex] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-
+  const [favorite, setFavorites] = useState(false);
   const [userPublicInfo, setUserPublicInfo] = useState({
     firstName: "",
     lastName: "",
@@ -106,6 +108,39 @@ const CarListingDetails = () => {
       getSeller();
     }
   }, [listing, auth.token]);
+
+  const handleFavorite = async () => {
+    favorite ? setFavorites(false) : setFavorites(true);
+
+    try {
+      const response = favorite
+        ? await fetch(
+            `http://localhost:5000/api/users/removeFavorite/${listingId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: JSON.stringify({ uid: auth.userId }),
+            }
+          )
+        : await fetch(
+            `http://localhost:5000/api/users/addFavorite/${listingId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: JSON.stringify({ uid: auth.userId }),
+            }
+          );
+      const resData = await response.json();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -203,19 +238,35 @@ const CarListingDetails = () => {
           padding: "20px 0",
         }}
       >
-        <Typography
-          sx={{
-            fontFamily: "Cooper Black, sans-serif",
-            textAlign: "left",
-            fontSize: "40px",
-            color: "#0066cc",
-            marginBottom: "20px",
-            marginLeft: "14vw",
-            transform: "scaleX(1.4)",
-          }}
-        >
-          {listing.year} {listing.make} {listing.model}
-        </Typography>
+        {auth.token && (
+          <Typography
+            sx={{
+              fontFamily: "Cooper Black, sans-serif",
+              display: "flex",
+              textAlign: "left",
+              alignItems: "center",
+              fontSize: "40px",
+              color: "#0066cc",
+              marginBottom: "20px",
+              marginLeft: "14vw",
+              transform: "scaleX(1.4)",
+            }}
+          >
+            {listing.year} {listing.make} {listing.model}
+            {favorite === true ? (
+              <Button onClick={() => handleFavorite()}>
+                <BookmarkIcon sx={{ fontSize: 50, textAlign: "center" }} />
+              </Button>
+            ) : (
+              <Button onClick={() => handleFavorite()}>
+                <BookmarkBorderIcon
+                  sx={{ fontSize: 50, textAlign: "center" }}
+                />
+              </Button>
+            )}
+          </Typography>
+        )}
+
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <Box
@@ -451,7 +502,20 @@ const CarListingDetails = () => {
               <strong>
                 {listing.year} {listing.make} {listing.model}
               </strong>
-              {`$${listing.price}`}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "18px",
+                fontFamily: "Cooper Black, sans-serif",
+              }}
+            >
+              <strong>
+                {` ` +
+                  new Intl.NumberFormat("en-US").format(
+                    parseInt(listing.price)
+                  ) +
+                  " $"}
+              </strong>
             </Typography>
             <Typography
               sx={{
