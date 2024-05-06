@@ -88,7 +88,6 @@ const CarListingDetails = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${auth.token}`,
             },
           }
         );
@@ -108,6 +107,34 @@ const CarListingDetails = () => {
       getSeller();
     }
   }, [listing, auth.token]);
+
+  useEffect(() => {
+    const getFavoriteContext = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/users/${auth.userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(result);
+          setFavorites(result.favorites.includes(listingId));
+        } else {
+          throw new Error("Failed to fetch seller");
+        }
+      } catch (err) {
+        console.error("Error fetching seller:", err);
+      }
+    };
+    getFavoriteContext();
+  }, [auth.token, auth.userId, listingId]);
 
   const handleFavorite = async () => {
     favorite ? setFavorites(false) : setFavorites(true);

@@ -115,9 +115,7 @@ const UserFavorites = () => {
             >
               <Button
                 component={NavLink}
-                to={{
-                  pathname: `listings/details/${listing._id}`,
-                }}
+                to={`/listings/details/${listing._id}`}
                 sx={{
                   color: "white",
                   backgroundColor: "rgb(0,148,255)",
