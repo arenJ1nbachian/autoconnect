@@ -297,7 +297,6 @@ const CarListingDetails = () => {
           <Grid item xs={8}>
             <Box
               sx={{
-                cursor: "pointer",
                 display: "flex",
                 gap: "20px",
                 marginBottom: "20px",
@@ -309,6 +308,7 @@ const CarListingDetails = () => {
                   src={carIcon}
                   alt="Main Car "
                   style={{
+                    cursor: "pointer",
                     width: "550px",
                     height: "300px",
                     marginTop: "15px",
@@ -324,6 +324,7 @@ const CarListingDetails = () => {
                     src={listing.images ? listing.images[0] : ""}
                     alt="Main Car "
                     style={{
+                      cursor: "pointer",
                       width: "550px",
                       border: "2px solid #0066cc",
                       height: "300px",
@@ -349,6 +350,7 @@ const CarListingDetails = () => {
                             src={img}
                             alt={`Side ${index + 1}`}
                             style={{
+                              cursor: "pointer",
                               width: "180px",
                               height: "100px",
                               objectFit: "cover",
@@ -360,6 +362,7 @@ const CarListingDetails = () => {
                           <Box
                             onClick={() => handleOpenModal(index + 1)}
                             sx={{
+                              cursor: "pointer",
                               position: "relative",
                               width: "180px",
                               height: "100px",
@@ -396,6 +399,7 @@ const CarListingDetails = () => {
                             src={img}
                             alt={`Side ${index + 1}`}
                             style={{
+                              cursor: "pointer",
                               width: "180px",
                               height: "100px",
                               objectFit: "cover",
