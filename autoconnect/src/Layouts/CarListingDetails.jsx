@@ -168,6 +168,19 @@ const CarListingDetails = () => {
                             </Box>
                           </Box>
                         )}
+                        {index === 2 && listing.images.length <= 4 && (
+                          <img
+                            key={index}
+                            src={img}
+                            alt={`Side ${index + 1}`}
+                            style={{
+                              width: "180px",
+                              height: "100px",
+                              objectFit: "cover",
+                              border: "2px solid #0066cc",
+                            }}
+                          />
+                        )}
                       </>
                     ))}
                   </Box>
