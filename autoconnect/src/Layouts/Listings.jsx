@@ -62,10 +62,13 @@ const Listings = () => {
   }, []);
 
   const handleFilterChange = (field) => (event) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [field]: prev[field] === event.target.value ? "" : event.target.value,
-    }));
+    console.log(event);
+    if (event.target.nodeName !== "DIV") {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        [field]: prev[field] === event.target.value ? "" : event.target.value,
+      }));
+    }
   };
 
   const renderRadioGroup = (field, items, logo = false) => (
