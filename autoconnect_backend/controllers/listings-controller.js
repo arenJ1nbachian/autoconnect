@@ -101,32 +101,68 @@ const getFavoritesByUserId = async (req, res, next) => {
 
 const getListings = async (req, res, next) => {
   try {
-    const listings = await Listings.find();
+    if (Object.keys(req.query).length === 0) {
+      const listings = await Listings.find();
 
-    const getUniqueSorted = (field) => {
-      const uniqueSet = new Set(listings.map((listing) => listing[field]));
-      return [...uniqueSet].sort();
-    };
+      const getUniqueSorted = (field) => {
+        const uniqueSet = new Set(listings.map((listing) => listing[field]));
+        return [...uniqueSet].sort();
+      };
 
-    const makes = getUniqueSorted("make");
-    const bodies = getUniqueSorted("body");
-    const transmissions = getUniqueSorted("transmission");
-    const tractions = getUniqueSorted("traction");
-    const fuels = getUniqueSorted("fuelType");
-    const colors = getUniqueSorted("color");
+      const makes = getUniqueSorted("make");
+      const bodies = getUniqueSorted("body");
+      const transmissions = getUniqueSorted("transmission");
+      const tractions = getUniqueSorted("traction");
+      const fuels = getUniqueSorted("fuelType");
+      const colors = getUniqueSorted("color");
 
-    res.status(200).json({
-      makes,
-      bodies,
-      transmissions,
-      tractions,
-      fuels,
-      colors,
-      priceRange: [0, 100000],
-      kmRange: [0, 500000],
-      yearRange: [2005, new Date().getFullYear()],
-      listings,
-    });
+      res.status(200).json({
+        makes,
+        bodies,
+        transmissions,
+        tractions,
+        fuels,
+        colors,
+        priceRange: [0, 100000],
+        kmRange: [0, 500000],
+        yearRange: [2005, new Date().getFullYear()],
+      });
+    } else {
+      const {
+        makes = "",
+        bodies = "",
+        transmissions = "",
+        tractions = "",
+        fuels = "",
+        colors = "",
+        priceMin = 0,
+        priceMax = 100000,
+        kmMin = 0,
+        kmMax = 500000,
+        yearMin = 2005,
+        yearMax = new Date().getFullYear(),
+      } = req.query;
+
+      const filters = {};
+      if (makes) filters.make = { $in: makes.split(",") };
+      if (bodies) filters.body = { $in: bodies.split(",") };
+      if (transmissions)
+        filters.transmission = { $in: transmissions.split(",") };
+      if (tractions) filters.traction = { $in: tractions.split(",") };
+      if (fuels) filters.fuelType = { $in: fuels.split(",") };
+      if (colors) filters.color = { $in: colors.split(",") };
+
+      filters.price = {
+        $gte: parseFloat(priceMin),
+        $lte: parseFloat(priceMax),
+      };
+      filters.km = { $gte: parseFloat(kmMin), $lte: parseFloat(kmMax) };
+      filters.year = { $gte: parseInt(yearMin), $lte: parseInt(yearMax) };
+
+      const listings = await Listings.find(filters);
+
+      res.status(200).json({ queryResult: listings });
+    }
   } catch (err) {
     console.error("Error fetching listings", err);
     res

@@ -320,7 +320,8 @@ const Listings = () => {
           </AccordionDetails>
         </Accordion>
       </Card>
-      <Catalog filterData={filterData} />
+      {console.log("What is selected", selectedFilters)}
+      <Catalog selectedFilters={selectedFilters} />
     </>
   );
 };
