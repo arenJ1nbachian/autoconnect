@@ -140,7 +140,7 @@ const CarListingDetails = () => {
     favorite ? setFavorites(false) : setFavorites(true);
 
     try {
-      const response = favorite
+      favorite
         ? await fetch(
             `http://localhost:5000/api/users/removeFavorite/${listingId}`,
             {
@@ -163,7 +163,6 @@ const CarListingDetails = () => {
               body: JSON.stringify({ uid: auth.userId }),
             }
           );
-      const resData = await response.json();
     } catch (error) {
       console.log(error);
     }

@@ -99,7 +99,41 @@ const getFavoritesByUserId = async (req, res, next) => {
   }
 };
 
-const getListings = async (req, res, next) => {};
+const getListings = async (req, res, next) => {
+  try {
+    const listings = await Listings.find();
+
+    const getUniqueSorted = (field) => {
+      const uniqueSet = new Set(listings.map((listing) => listing[field]));
+      return [...uniqueSet].sort();
+    };
+
+    const makes = getUniqueSorted("make");
+    const bodies = getUniqueSorted("body");
+    const transmissions = getUniqueSorted("transmission");
+    const tractions = getUniqueSorted("traction");
+    const fuels = getUniqueSorted("fuelType");
+    const colors = getUniqueSorted("color");
+
+    res.status(200).json({
+      makes,
+      bodies,
+      transmissions,
+      tractions,
+      fuels,
+      colors,
+      priceRange: [0, 100000],
+      kmRange: [0, 500000],
+      yearRange: [2005, new Date().getFullYear()],
+      listings,
+    });
+  } catch (err) {
+    console.error("Error fetching listings", err);
+    res
+      .status(500)
+      .json({ message: "Fetching listings failed, please try again later." });
+  }
+};
 
 const getListing = async (req, res, next) => {
   const { lid } = req.params;

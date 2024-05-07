@@ -68,7 +68,7 @@ const UserFavorites = () => {
               {"Vous n'ayez pas d'annonces préférées"}
               <br />
               {
-                "Pour ajouter des annonces à vos favoris, cliquez sur l'étoile jaune en haut à droite de la page de l'annonce."
+                "Pour ajouter des annonces à vos favoris, cliquez sur l'icône de sauvegarde en haut à coté du titre de l'annonce."
               }
             </Typography>
           </>
