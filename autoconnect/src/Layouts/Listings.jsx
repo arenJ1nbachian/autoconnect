@@ -15,13 +15,6 @@ import carLogo from "../Data/carLogo.json";
 import Catalog from "../Components/Catalog";
 
 const Listings = () => {
-  const summarySx = {
-    minHeight: "72.2px",
-    "& .MuiAccordionSummary-content": {
-      margin: "12px 0",
-    },
-  };
-
   const [selectedFilters, setSelectedFilters] = useState({
     makes: "",
     bodies: "",
