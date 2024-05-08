@@ -7,6 +7,8 @@ router.get("/", listingsController.getListings);
 
 router.get("/:lid", listingsController.getListing);
 
+router.get("/availableModels/:make", listingsController.getAvailableModels);
+
 router.use(checkAuth);
 
 router.post("/", listingsController.createListing);

@@ -18,6 +18,7 @@ import Catalog from "../Components/Catalog";
 const Listings = () => {
   const [selectedFilters, setSelectedFilters] = useState({
     makes: "",
+    models: "",
     bodies: "",
     transmissions: "",
     tractions: "",
@@ -30,6 +31,7 @@ const Listings = () => {
 
   const [filterData, setFilterData] = useState({
     makes: [],
+    models: [],
     bodies: [],
     transmissions: [],
     tractions: [],
@@ -61,15 +63,59 @@ const Listings = () => {
     fetchFilterData();
   }, []);
 
-  const handleFilterChange = (field) => (event) => {
-    console.log(event);
-    if (event.target.nodeName !== "DIV") {
-      setSelectedFilters((prev) => ({
-        ...prev,
-        [field]: prev[field] === event.target.value ? "" : event.target.value,
-      }));
+  useEffect(() => {
+    const fetchFilteredModels = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/cars/availableModels/${selectedFilters.makes}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch filter data");
+
+        const data = await response.json();
+        setFilterData((prev) => ({
+          ...prev,
+          models: data.models,
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (selectedFilters.makes !== "") {
+      fetchFilteredModels();
     }
-  };
+  }, [selectedFilters.makes]);
+
+  const handleFilterChange =
+    (field, item = "") =>
+    (event) => {
+      const targetValue = event.target.value || item;
+      console.log("Changing field", field);
+      /* La balise div entourant l'input déclenche son propre événement, suivi de celui de l'input.
+       Nous nous intéressons uniquement à l'événement de l'input, car il contient target.value
+      pour mettre à jour l'état de selectedFilters. Ignorer l'événement du div évite les
+       problèmes de mise à jour d'état qui pourraient entraîner des erreurs de filtrage.
+
+       Cliquer sur le div devrait également avoir le même effet que cliquer sur le bouton radio. */
+
+      console.log(event);
+
+      if (event.target.nodeName !== "DIV" && event.target.nodeName !== "IMG") {
+        if (field === "makes") {
+          selectedFilters["makes"] === targetValue &&
+            setSelectedFilters((prev) => ({ ...prev, models: "" }));
+        }
+        setSelectedFilters((prev) => ({
+          ...prev,
+          [field]: prev[field] === targetValue ? "" : targetValue,
+        }));
+      }
+    };
 
   const renderRadioGroup = (field, items, logo = false) => (
     <RadioGroup
@@ -83,16 +129,31 @@ const Listings = () => {
           control={<Radio />}
           label={
             logo && carLogo.carLogo[item] ? (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  style={{ width: "50px", marginRight: "8px" }}
-                  alt={item}
-                  src={carLogo.carLogo[item]}
-                />
-                {item}
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    onClick={handleFilterChange(field, item)}
+                    style={{ width: "50px", marginRight: "8px" }}
+                    alt={item}
+                    src={carLogo.carLogo[item]}
+                  />
+                  {item}
+                </div>
+                {selectedFilters.makes !== "" &&
+                  filterData.models !== undefined &&
+                  filterData.models.length > 0 &&
+                  item === selectedFilters.makes && (
+                    <RadioGroup
+                      value={selectedFilters["models"] || ""}
+                      onClick={(e) => {
+                        handleFilterChange("models");
+                      }}
+                      sx={{ marginLeft: "20px", marginTop: "10px" }}
+                    ></RadioGroup>
+                  )}
               </div>
             ) : (
-              item
+              <div>{item}</div>
             )
           }
         />
@@ -140,7 +201,7 @@ const Listings = () => {
               marginLeft: "4vw",
               marginTop: "3vh",
               width: 350,
-              height: 650,
+              height: 637,
               overflowY: "auto",
               borderRadius: 7,
             }}
@@ -151,16 +212,67 @@ const Listings = () => {
                 aria-controls="panel1-content"
                 id="panel1-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },
                 }}
               >
-                Marque et Modèle
+                Marque
               </AccordionSummary>
               <AccordionDetails>
-                {renderRadioGroup("makes", filterData.makes, true)}
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {renderRadioGroup("makes", filterData.makes, true)}
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+                sx={{
+                  minHeight: "60px",
+                  "& .MuiAccordionSummary-content": {
+                    margin: "12px 0",
+                  },
+                }}
+              >
+                Modèle
+              </AccordionSummary>
+              <AccordionDetails>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {selectedFilters.makes !== "" &&
+                    filterData.models !== undefined &&
+                    filterData.models.length > 0 && (
+                      <>
+                        {filterData.models.map((model) => (
+                          <RadioGroup
+                            onClick={handleFilterChange("models")}
+                            value={selectedFilters["models"] || ""}
+                          >
+                            <FormControlLabel
+                              sx={{ marginLeft: "5px" }}
+                              key={model}
+                              value={model}
+                              control={<Radio size="small" />}
+                              label={
+                                <div
+                                  style={{
+                                    fontSize: 15,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {model}
+                                </div>
+                              }
+                            />
+                          </RadioGroup>
+                        ))}
+                      </>
+                    )}
+                </div>
               </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -169,7 +281,7 @@ const Listings = () => {
                 aria-controls="panel2-content"
                 id="panel2-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },
@@ -187,7 +299,7 @@ const Listings = () => {
                 aria-controls="panel3-content"
                 id="panel3-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },
@@ -211,7 +323,7 @@ const Listings = () => {
                 aria-controls="panel4-content"
                 id="panel4-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },
@@ -235,7 +347,7 @@ const Listings = () => {
                 aria-controls="panel5-content"
                 id="panel5-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },
@@ -259,7 +371,7 @@ const Listings = () => {
                 aria-controls="panel6-content"
                 id="panel6-header"
                 sx={{
-                  minHeight: "72.2px",
+                  minHeight: "60px",
                   "& .MuiAccordionSummary-content": {
                     margin: "12px 0",
                   },

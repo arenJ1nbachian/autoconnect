@@ -99,6 +99,21 @@ const getFavoritesByUserId = async (req, res, next) => {
   }
 };
 
+const getAvailableModels = async (req, res, next) => {
+  try {
+    const listings = await Listings.find({ make: req.params.make });
+
+    const getUniqueSorted = (field) => {
+      const uniqueSet = new Set(listings.map((listing) => listing["model"]));
+      return [...uniqueSet].sort();
+    };
+
+    res.status(200).json({ models: getUniqueSorted() });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getListings = async (req, res, next) => {
   try {
     if (Object.keys(req.query).length === 0) {
@@ -130,6 +145,7 @@ const getListings = async (req, res, next) => {
     } else {
       const {
         makes = "",
+        models = "",
         bodies = "",
         transmissions = "",
         tractions = "",
@@ -143,8 +159,11 @@ const getListings = async (req, res, next) => {
         yearMax = new Date().getFullYear(),
       } = req.query;
 
+      console.log(models);
+
       const filters = {};
       if (makes) filters.make = { $in: makes.split(",") };
+      if (models) filters.model = { $in: models.split(",") };
       if (bodies) filters.body = { $in: bodies.split(",") };
       if (transmissions)
         filters.transmission = { $in: transmissions.split(",") };
@@ -266,3 +285,4 @@ exports.getFavoritesByUserId = getFavoritesByUserId;
 exports.getListing = getListing;
 exports.editListing = editListing;
 exports.deleteListing = deleteListing;
+exports.getAvailableModels = getAvailableModels;

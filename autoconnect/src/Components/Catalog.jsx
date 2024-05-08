@@ -1,4 +1,4 @@
-import { Box, Grid, Paper } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import carIcon from "../img/default_car_image.png";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ const Catalog = ({ selectedFilters }) => {
   useEffect(() => {
     const {
       makes,
+      models,
       bodies,
       transmissions,
       tractions,
@@ -22,6 +23,7 @@ const Catalog = ({ selectedFilters }) => {
 
     const queryParams = new URLSearchParams({
       makes: makes ? makes : "",
+      models: models ? models : "",
       bodies: bodies ? bodies : "",
       transmissions: transmissions ? transmissions : "",
       tractions: tractions ? tractions : "",
