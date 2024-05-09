@@ -67,7 +67,10 @@ const createListing = async (req, res, next) => {
       listing: savedListing,
     });
   } catch (error) {
-    res.status(500).json({ error: "Erreur lors de la création d'une annonce" });
+    res.status(500).json({
+      error:
+        "Quelque chose n'a pas fonctionné, veuillez vérifier si vous avez correctement écrit tous les champs et dans le bon format.",
+    });
   }
 };
 
@@ -288,7 +291,10 @@ const editListing = async (req, res, next) => {
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Erreur lors de la modification d'une annonce" });
+      .json({
+        error:
+          "Quelque chose n'a pas fonctionné, veuillez vérifier si vous avez correctement écrit tous les champs et dans le bon format.",
+      });
   }
 };
 
