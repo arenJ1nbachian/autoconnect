@@ -68,21 +68,82 @@ const Error = () => {
             width: "40%",
           }}
         >
-          <Button onClick={() => navigate("/register")}>
-            <AppRegistrationIcon sx={{ fontSize: 75, textAlign: "center" }} />
-          </Button>
-          <Button
-            onClick={() =>
-              navigate(
-                "/listings?makes=&models=&bodies=&transmissions=&tractions=&fuels=&colors=&priceMin=0&priceMax=100000&kmMin=0&kmMax=500000&yearMin=2005&yearMax=2024&search="
-              )
-            }
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <SearchIcon sx={{ fontSize: 75, textAlign: "center" }} />
-          </Button>
-          <Button onClick={() => navigate("/login")}>
-            <LoginIcon sx={{ fontSize: 75, textAlign: "center" }} />
-          </Button>
+            <Button onClick={() => navigate("/register")}>
+              <AppRegistrationIcon sx={{ fontSize: 75, textAlign: "center" }} />
+            </Button>
+            <Typography
+              variant="p"
+              sx={{
+                fontFamily: "Cooper Black",
+                color: "rgb(0,74,127)",
+                fontSize: "14px",
+
+                textAlign: "center",
+                letterSpacing: "9px",
+                marginBottom: "5vh",
+              }}
+            >
+              S'INSCRIRE
+            </Typography>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Button onClick={() => navigate("/register")}>
+              <SearchIcon sx={{ fontSize: 75, textAlign: "center" }} />
+            </Button>
+            <Typography
+              variant="p"
+              sx={{
+                fontFamily: "Cooper Black",
+                color: "rgb(0,74,127)",
+                fontSize: "14px",
+                width: "200px",
+                textAlign: "center",
+                letterSpacing: "9px",
+                marginBottom: "5vh",
+              }}
+            >
+              ACHETER UNE VOITURE
+            </Typography>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Button onClick={() => navigate("/register")}>
+              <LoginIcon sx={{ fontSize: 75, textAlign: "center" }} />
+            </Button>
+            <Typography
+              variant="p"
+              sx={{
+                fontFamily: "Cooper Black",
+                color: "rgb(0,74,127)",
+                fontSize: "14px",
+
+                textAlign: "center",
+                letterSpacing: "9px",
+                marginBottom: "5vh",
+              }}
+            >
+              SE CONNECTER
+            </Typography>
+          </div>
         </div>
       </div>
     </>
