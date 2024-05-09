@@ -116,72 +116,55 @@ const getAvailableModels = async (req, res, next) => {
 
 const getListings = async (req, res, next) => {
   try {
-    if (Object.keys(req.query).length === 0) {
-      const listings = await Listings.find();
+    const filters = {};
 
-      const getUniqueSorted = (field) => {
-        const uniqueSet = new Set(listings.map((listing) => listing[field]));
-        return [...uniqueSet].sort();
-      };
+    if (req.query.makes) filters.make = { $in: req.query.makes.split(",") };
+    if (req.query.models) filters.model = { $in: req.query.models.split(",") };
+    if (req.query.bodies) filters.body = { $in: req.query.bodies.split(",") };
+    if (req.query.transmissions)
+      filters.transmission = { $in: req.query.transmissions.split(",") };
+    if (req.querytractions)
+      filters.traction = { $in: req.query.tractions.split(",") };
+    if (req.queryfuels) filters.fuelType = { $in: req.query.fuels.split(",") };
+    if (req.querycolors) filters.color = { $in: req.query.colors.split(",") };
+    filters.price = {
+      $gte: parseFloat(req.query.priceMin),
+      $lte: parseFloat(req.query.priceMax),
+    };
+    filters.km = {
+      $gte: parseFloat(req.query.kmMin),
+      $lte: parseFloat(req.query.kmMax),
+    };
+    filters.year = {
+      $gte: parseInt(req.query.yearMin),
+      $lte: parseInt(req.query.yearMax),
+    };
 
-      const makes = getUniqueSorted("make");
-      const bodies = getUniqueSorted("body");
-      const transmissions = getUniqueSorted("transmission");
-      const tractions = getUniqueSorted("traction");
-      const fuels = getUniqueSorted("fuelType");
-      const colors = getUniqueSorted("color");
+    const listings = await Listings.find(filters).exec();
 
-      res.status(200).json({
+    const getUniqueSorted = (field) => {
+      const uniqueSet = new Set(listings.map((listing) => listing[field]));
+      return [...uniqueSet].sort();
+    };
+
+    const makes = getUniqueSorted("make");
+    const bodies = getUniqueSorted("body");
+    const transmissions = getUniqueSorted("transmission");
+    const tractions = getUniqueSorted("traction");
+    const fuels = getUniqueSorted("fuelType");
+    const colors = getUniqueSorted("color");
+
+    res.json({
+      filtersAvailable: {
         makes,
         bodies,
         transmissions,
         tractions,
         fuels,
         colors,
-        priceRange: [0, 100000],
-        kmRange: [0, 500000],
-        yearRange: [2005, new Date().getFullYear()],
-      });
-    } else {
-      const {
-        makes = "",
-        models = "",
-        bodies = "",
-        transmissions = "",
-        tractions = "",
-        fuels = "",
-        colors = "",
-        priceMin = 0,
-        priceMax = 100000,
-        kmMin = 0,
-        kmMax = 500000,
-        yearMin = 2005,
-        yearMax = new Date().getFullYear(),
-      } = req.query;
-
-      console.log(models);
-
-      const filters = {};
-      if (makes) filters.make = { $in: makes.split(",") };
-      if (models) filters.model = { $in: models.split(",") };
-      if (bodies) filters.body = { $in: bodies.split(",") };
-      if (transmissions)
-        filters.transmission = { $in: transmissions.split(",") };
-      if (tractions) filters.traction = { $in: tractions.split(",") };
-      if (fuels) filters.fuelType = { $in: fuels.split(",") };
-      if (colors) filters.color = { $in: colors.split(",") };
-
-      filters.price = {
-        $gte: parseFloat(priceMin),
-        $lte: parseFloat(priceMax),
-      };
-      filters.km = { $gte: parseFloat(kmMin), $lte: parseFloat(kmMax) };
-      filters.year = { $gte: parseInt(yearMin), $lte: parseInt(yearMax) };
-
-      const listings = await Listings.find(filters);
-
-      res.status(200).json({ queryResult: listings });
-    }
+      },
+      listingsAvailable: listings,
+    });
   } catch (err) {
     console.error("Error fetching listings", err);
     res

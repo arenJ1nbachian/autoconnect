@@ -1,65 +1,9 @@
 import { Box, Grid } from "@mui/material";
-import { useEffect, useState } from "react";
 import carIcon from "../img/default_car_image.png";
 import { useNavigate } from "react-router-dom";
 
-const Catalog = ({ selectedFilters }) => {
-  const [result, setResult] = useState(undefined);
+const Catalog = ({ availableListings }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const {
-      makes,
-      models,
-      bodies,
-      transmissions,
-      tractions,
-      fuels,
-      colors,
-      priceRange = [0, 100000],
-      kmRange = [0, 500000],
-      yearRange = [2005, new Date().getFullYear()],
-    } = selectedFilters;
-
-    const queryParams = new URLSearchParams({
-      makes: makes ? makes : "",
-      models: models ? models : "",
-      bodies: bodies ? bodies : "",
-      transmissions: transmissions ? transmissions : "",
-      tractions: tractions ? tractions : "",
-      fuels: fuels ? fuels : "",
-      colors: colors ? colors : "",
-      priceMin: priceRange[0],
-      priceMax: priceRange[1],
-      kmMin: kmRange[0],
-      kmMax: kmRange[1],
-      yearMin: yearRange[0],
-      yearMax: yearRange[1],
-    }).toString();
-
-    const fetchQuery = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/cars/?${queryParams}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) throw new Error("Failed to fetch filter data");
-
-        const data = await response.json();
-        setResult(data);
-        console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchQuery();
-  }, [selectedFilters]);
 
   const handleClick = (id) => {
     navigate(`/listings/details/${id}`);
@@ -67,8 +11,8 @@ const Catalog = ({ selectedFilters }) => {
 
   return (
     <>
-      {result &&
-        result.queryResult.map((listing) => (
+      {availableListings &&
+        availableListings.map((listing) => (
           <Grid item xs={3}>
             <Box
               onClick={() => handleClick(listing._id)}
@@ -86,7 +30,7 @@ const Catalog = ({ selectedFilters }) => {
               }}
             >
               <div>
-                {result && (
+                {availableListings && (
                   <Box
                     sx={{
                       position: "absolute",

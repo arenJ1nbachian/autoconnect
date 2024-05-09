@@ -42,26 +42,72 @@ const Listings = () => {
     yearRange: [1990, new Date().getFullYear()],
   });
 
+  const [availableListings, setAvailableListings] = useState([]);
+
   useEffect(() => {
+    const {
+      makes,
+      models,
+      bodies,
+      transmissions,
+      tractions,
+      fuels,
+      colors,
+      priceRange = [0, 100000],
+      kmRange = [0, 500000],
+      yearRange = [2005, new Date().getFullYear()],
+    } = selectedFilters;
+
+    const queryParams = new URLSearchParams({
+      makes: makes ? makes : "",
+      models: models ? models : "",
+      bodies: bodies ? bodies : "",
+      transmissions: transmissions ? transmissions : "",
+      tractions: tractions ? tractions : "",
+      fuels: fuels ? fuels : "",
+      colors: colors ? colors : "",
+      priceMin: priceRange[0],
+      priceMax: priceRange[1],
+      kmMin: kmRange[0],
+      kmMax: kmRange[1],
+      yearMin: yearRange[0],
+      yearMax: yearRange[1],
+    }).toString();
+
     const fetchFilterData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/cars/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/cars/?${queryParams}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch filter data");
 
         const data = await response.json();
-        setFilterData(data);
+        console.log(data);
+        setFilterData((prev) => ({
+          ...prev,
+          makes: data.filtersAvailable.makes,
+          models: data.filtersAvailable.models,
+          bodies: data.filtersAvailable.bodies,
+          transmissions: data.filtersAvailable.transmissions,
+          tractions: data.filtersAvailable.tractions,
+          fuels: data.filtersAvailable.fuels,
+          colors: data.filtersAvailable.colors,
+        }));
+        setAvailableListings(data.listingsAvailable);
+        console.log(data);
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchFilterData();
-  }, []);
+  }, [selectedFilters]);
 
   useEffect(() => {
     const fetchFilteredModels = async () => {
@@ -117,49 +163,52 @@ const Listings = () => {
       }
     };
 
-  const renderRadioGroup = (field, items, logo = false) => (
-    <RadioGroup
-      value={selectedFilters[field] || ""}
-      onClick={handleFilterChange(field)}
-    >
-      {items.map((item) => (
-        <FormControlLabel
-          key={item}
-          value={item}
-          control={<Radio />}
-          label={
-            logo && carLogo.carLogo[item] ? (
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <img
-                    onClick={handleFilterChange(field, item)}
-                    style={{ width: "50px", marginRight: "8px" }}
-                    alt={item}
-                    src={carLogo.carLogo[item]}
-                  />
-                  {item}
+  const renderRadioGroup = (field, items, logo = false) =>
+    filterData[field] ? (
+      <RadioGroup
+        value={selectedFilters[field] || ""}
+        onClick={handleFilterChange(field)}
+      >
+        {items.map((item) => (
+          <FormControlLabel
+            key={item}
+            value={item}
+            control={<Radio />}
+            label={
+              logo && carLogo.carLogo[item] ? (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      onClick={handleFilterChange(field, item)}
+                      style={{ width: "50px", marginRight: "8px" }}
+                      alt={item}
+                      src={carLogo.carLogo[item]}
+                    />
+                    {item}
+                  </div>
+                  {selectedFilters.makes !== "" &&
+                    filterData.models !== undefined &&
+                    filterData.models.length > 0 &&
+                    item === selectedFilters.makes && (
+                      <RadioGroup
+                        value={selectedFilters["models"] || ""}
+                        onClick={(e) => {
+                          handleFilterChange("models");
+                        }}
+                        sx={{ marginLeft: "20px", marginTop: "10px" }}
+                      ></RadioGroup>
+                    )}
                 </div>
-                {selectedFilters.makes !== "" &&
-                  filterData.models !== undefined &&
-                  filterData.models.length > 0 &&
-                  item === selectedFilters.makes && (
-                    <RadioGroup
-                      value={selectedFilters["models"] || ""}
-                      onClick={(e) => {
-                        handleFilterChange("models");
-                      }}
-                      sx={{ marginLeft: "20px", marginTop: "10px" }}
-                    ></RadioGroup>
-                  )}
-              </div>
-            ) : (
-              <div>{item}</div>
-            )
-          }
-        />
-      ))}
-    </RadioGroup>
-  );
+              ) : (
+                <div>{item}</div>
+              )
+            }
+          />
+        ))}
+      </RadioGroup>
+    ) : (
+      console.log(filterData)
+    );
 
   const handleSliderChange = (field) => (event, newValue) => {
     setSelectedFilters((prev) => ({
@@ -446,12 +495,10 @@ const Listings = () => {
           xs={9}
         >
           <Grid container>
-            <Catalog selectedFilters={selectedFilters} />
+            <Catalog availableListings={availableListings} />
           </Grid>
         </Grid>
       </Grid>
-
-      {console.log("What is selected", selectedFilters)}
     </>
   );
 };
