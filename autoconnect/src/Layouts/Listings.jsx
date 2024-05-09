@@ -10,6 +10,7 @@ import {
   Typography,
   Slider,
   Grid,
+  Box,
 } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
 import carLogo from "../Data/carLogo.json";
@@ -25,6 +26,8 @@ const Listings = () => {
   );
 
   const search = useRef(decodeURIComponent(queryString.get("search") || ""));
+
+  const [error, setError] = useState("");
 
   const [filterData, setFilterData] = useState({
     makes: [],
@@ -202,21 +205,28 @@ const Listings = () => {
             },
           }
         );
-        if (!response.ok) throw new Error("Failed to fetch filter data");
 
         const data = await response.json();
-        setFilterData((prev) => ({
-          ...prev,
-          makes: data.filtersAvailable.makes,
-          models: data.filtersAvailable.models,
-          bodies: data.filtersAvailable.bodies,
-          transmissions: data.filtersAvailable.transmissions,
-          tractions: data.filtersAvailable.tractions,
-          fuels: data.filtersAvailable.fuels,
-          colors: data.filtersAvailable.colors,
-        }));
 
-        setAvailableListings(data.listingsAvailable);
+        if (response.status === 202) {
+          setError({ noCars: data.message });
+        } else if (response.status === 404) {
+          setError({ noCriteria: data.message });
+        } else {
+          setFilterData((prev) => ({
+            ...prev,
+            makes: data.filtersAvailable.makes,
+            models: data.filtersAvailable.models,
+            bodies: data.filtersAvailable.bodies,
+            transmissions: data.filtersAvailable.transmissions,
+            tractions: data.filtersAvailable.tractions,
+            fuels: data.filtersAvailable.fuels,
+            colors: data.filtersAvailable.colors,
+          }));
+
+          setError("");
+          setAvailableListings(data.listingsAvailable);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -254,7 +264,26 @@ const Listings = () => {
     }
   }, [selectedFilters.makes]);
 
-  return (
+  return error.noCars ? (
+    <Box
+      display="flex"
+      textAlign={"center"}
+      margin={"auto"}
+      alignItems="center"
+      height="100vh"
+      width={"65vw"}
+    >
+      <Typography
+        sx={{
+          fontFamily: "Cooper Black",
+          fontSize: "40px",
+          color: "rgb(0,74,127)",
+        }}
+      >
+        {error.noCars}
+      </Typography>
+    </Box>
+  ) : (
     <>
       <Typography
         sx={{
@@ -512,16 +541,32 @@ const Listings = () => {
             </Accordion>
           </Card>
         </Grid>
-
-        <Grid
-          sx={{ overflow: "auto", width: "auto", height: "75vh" }}
-          item
-          xs={9}
-        >
-          <Grid container>
-            <Catalog availableListings={availableListings} />
+        {!error.noCriteria ? (
+          <Grid
+            sx={{ overflow: "auto", width: "auto", height: "75vh" }}
+            item
+            xs={9}
+          >
+            <Grid container>
+              <Catalog availableListings={availableListings} />
+            </Grid>
           </Grid>
-        </Grid>
+        ) : (
+          <Grid item xs={9}>
+            <Box margin={"auto"} marginTop={"15vh"} height="60vh" width="50vw">
+              <Typography
+                sx={{
+                  fontFamily: "Cooper Black",
+                  fontSize: "40px",
+                  color: "rgb(0,74,127)",
+                  textAlign: "center",
+                }}
+              >
+                {error.noCriteria}
+              </Typography>
+            </Box>
+          </Grid>
+        )}
       </Grid>
     </>
   );

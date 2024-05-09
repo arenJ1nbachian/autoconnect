@@ -161,6 +161,24 @@ const getListings = async (req, res, next) => {
       $lte: parseInt(req.query.yearMax),
     };
 
+    let listings = await Listings.find();
+
+    if (listings.length === 0) {
+      return res.status(202).json({
+        message:
+          "Actuellement, il n'y a pas d'annonces de voitures disponibles. Revenez plus tard ou envisagez d'ajouter votre propre annonce !",
+      });
+    }
+
+    listings = await Listings.find(filters);
+
+    if (listings.length === 0) {
+      return res.status(404).json({
+        message:
+          "Aucune annonce de voiture ne correspond aux critères donnés. Veuillez réessayer avec d'autres filtres ou envisagez d'ajouter votre propre annonce correspondant à ces critères spécifiques.",
+      });
+    }
+
     const query = findSearchResult(req.query.search, [
       "make",
       "model",
@@ -169,7 +187,6 @@ const getListings = async (req, res, next) => {
       "transmission",
       "fuelType",
     ]);
-    const listings = await Listings.find(filters);
 
     const listingSearchQuery = await Listings.find(query);
 
@@ -186,16 +203,18 @@ const getListings = async (req, res, next) => {
     const fuels = getUniqueSorted("fuelType");
     const colors = getUniqueSorted("color");
 
+    const filtersAvailable = {
+      makes,
+      models,
+      bodies,
+      transmissions,
+      tractions,
+      fuels,
+      colors,
+    };
+
     res.json({
-      filtersAvailable: {
-        makes,
-        models,
-        bodies,
-        transmissions,
-        tractions,
-        fuels,
-        colors,
-      },
+      filtersAvailable,
       listingsAvailable: req.query.search ? listingSearchQuery : listings,
     });
   } catch (err) {
