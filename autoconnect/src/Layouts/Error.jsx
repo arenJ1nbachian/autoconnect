@@ -1,5 +1,92 @@
+import { Button, Typography } from "@mui/material";
+import Menu from "../Components/Menu";
+import LoginIcon from "@mui/icons-material/Login";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
+
 const Error = () => {
-  return <>Error</>;
+  const navigate = useNavigate();
+  return (
+    <>
+      <Menu />
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          gap: "10px",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="h1"
+          sx={{
+            fontFamily: "Cooper Black",
+            fontSize: "32px",
+            color: "rgb(0,74,127)",
+            fontWeight: "700",
+            letterSpacing: "9px",
+          }}
+        >
+          PAGE NON TROUVÉE
+        </Typography>
+        <Typography
+          variant="h1"
+          sx={{
+            fontFamily: "Cooper Black",
+            fontSize: "32px",
+            width: "37vw",
+            color: "rgb(0,74,127)",
+            textAlign: "center",
+            marginBottom: "40px",
+            letterSpacing: "10px",
+          }}
+        >
+          DÉSOLÉ, NOUS N'AVONS PAS TROUVÉ CETTE PAGE.
+        </Typography>
+        <Typography
+          variant="p"
+          sx={{
+            fontFamily: "Cooper Black",
+            color: "rgb(0,74,127)",
+            fontSize: "14px",
+            width: "30vw",
+            textAlign: "center",
+            letterSpacing: "9px",
+            marginBottom: "5vh",
+          }}
+        >
+          PEUT-ÊTRE QUE VOUS SOUHAITEZ :
+        </Typography>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "40%",
+          }}
+        >
+          <Button onClick={() => navigate("/register")}>
+            <AppRegistrationIcon sx={{ fontSize: 75, textAlign: "center" }} />
+          </Button>
+          <Button
+            onClick={() =>
+              navigate(
+                "/listings?makes=&models=&bodies=&transmissions=&tractions=&fuels=&colors=&priceMin=0&priceMax=100000&kmMin=0&kmMax=500000&yearMin=2005&yearMax=2024&search="
+              )
+            }
+          >
+            <SearchIcon sx={{ fontSize: 75, textAlign: "center" }} />
+          </Button>
+          <Button onClick={() => navigate("/login")}>
+            <LoginIcon sx={{ fontSize: 75, textAlign: "center" }} />
+          </Button>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Error;
