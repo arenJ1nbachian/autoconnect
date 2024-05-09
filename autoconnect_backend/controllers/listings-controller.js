@@ -1,6 +1,26 @@
 const Listings = require("../models/listing");
 const Users = require("../models/user");
 
+const findSearchResult = (searchResult, fields) => {
+  const search = searchResult.split(" ").filter((word) => word !== "");
+
+  if (search.length > 1) {
+    return {
+      $or: search.map((word) => ({
+        $or: fields.map((field) => ({
+          [field]: { $regex: `^${word}`, $options: "i" },
+        })),
+      })),
+    };
+  }
+
+  return {
+    $or: fields.map((field) => ({
+      [field]: { $regex: `^${search}`, $options: "i" },
+    })),
+  };
+};
+
 const createListing = async (req, res, next) => {
   try {
     const {
@@ -125,8 +145,9 @@ const getListings = async (req, res, next) => {
       filters.transmission = { $in: req.query.transmissions.split(",") };
     if (req.querytractions)
       filters.traction = { $in: req.query.tractions.split(",") };
-    if (req.queryfuels) filters.fuelType = { $in: req.query.fuels.split(",") };
-    if (req.querycolors) filters.color = { $in: req.query.colors.split(",") };
+    if (req.query.fuels) filters.fuelType = { $in: req.query.fuels.split(",") };
+    if (req.query.colors) filters.color = { $in: req.query.colors.split(",") };
+
     filters.price = {
       $gte: parseFloat(req.query.priceMin),
       $lte: parseFloat(req.query.priceMax),
@@ -140,7 +161,17 @@ const getListings = async (req, res, next) => {
       $lte: parseInt(req.query.yearMax),
     };
 
-    const listings = await Listings.find(filters).exec();
+    const query = findSearchResult(req.query.search, [
+      "make",
+      "model",
+      "color",
+      "body",
+      "transmission",
+      "fuelType",
+    ]);
+    const listings = await Listings.find(filters);
+
+    const listingSearchQuery = await Listings.find(query);
 
     const getUniqueSorted = (field) => {
       const uniqueSet = new Set(listings.map((listing) => listing[field]));
@@ -148,6 +179,7 @@ const getListings = async (req, res, next) => {
     };
 
     const makes = getUniqueSorted("make");
+    const models = getUniqueSorted("model");
     const bodies = getUniqueSorted("body");
     const transmissions = getUniqueSorted("transmission");
     const tractions = getUniqueSorted("traction");
@@ -157,13 +189,14 @@ const getListings = async (req, res, next) => {
     res.json({
       filtersAvailable: {
         makes,
+        models,
         bodies,
         transmissions,
         tractions,
         fuels,
         colors,
       },
-      listingsAvailable: listings,
+      listingsAvailable: req.query.search ? listingSearchQuery : listings,
     });
   } catch (err) {
     console.error("Error fetching listings", err);

@@ -53,7 +53,7 @@ const Menu = () => {
             )}
             <Button
               component={NavLink}
-              to="/listings"
+              to="/listings?makes=&models=&bodies=&transmissions=&tractions=&fuels=&colors=&priceMin=0&priceMax=100000&kmMin=0&kmMax=500000&yearMin=2005&yearMax=2024&search="
               sx={{
                 color: "white",
                 textDecoration: "none",
@@ -114,11 +114,11 @@ const Menu = () => {
         </AppBar>
       </Box>
       <SearchBar />
-      <Box sx={{ display: "flex"}}>
+      <Box sx={{ display: "flex" }}>
         <AppBar
           position="fixed"
           sx={{
-            top:"7vh",
+            top: "7vh",
             zIndex: 2,
             height: "5vh",
             boxShadow: "none",
@@ -126,9 +126,12 @@ const Menu = () => {
           }}
         >
           <Toolbar
-            sx={{ padding: "0px !important", minHeight: "40px !important", display:"flex"}}
+            sx={{
+              padding: "0px !important",
+              minHeight: "40px !important",
+              display: "flex",
+            }}
           >
-            
             {auth.isLoggedIn && (
               <Button
                 component={NavLink}
@@ -146,7 +149,7 @@ const Menu = () => {
                 Mes annonces
               </Button>
             )}
-          
+
             {auth.isLoggedIn && (
               <>
                 <Button
@@ -156,14 +159,13 @@ const Menu = () => {
                     marginRight: "7vw",
                     color: "white",
                     textDecoration: "none",
-                    
+
                     padding: 0,
                     fontSize: 18,
                   }}
                 >
-                 Créer une annonce
+                  Créer une annonce
                 </Button>
-                
               </>
             )}
           </Toolbar>

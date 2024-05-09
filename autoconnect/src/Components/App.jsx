@@ -38,7 +38,6 @@ const loggedInRouter = createBrowserRouter([
     errorElement: <Error />,
     children: [
       { path: "listings", element: <Listings /> },
-      { path: "listings/search/:query", element: <Listings /> },
       { path: "listings/details/:listingId", element: <CarListingDetails /> },
       { path: "listing/create", element: <CarListingCreation /> },
       { path: "listing/edit/:listingId", element: <CarListingEdit /> },

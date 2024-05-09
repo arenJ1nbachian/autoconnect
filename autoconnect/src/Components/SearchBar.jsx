@@ -12,11 +12,25 @@ const SearchBar = () => {
   };
 
   const handleSearch = () => {
-    if (searchBar) {
-      navigate(`/listings/search/${searchBar}`);
-    } else {
-      navigate(`/listings/`);
-    }
+    navigate({
+      pathname: `/listings`,
+      search: new URLSearchParams({
+        makes: "",
+        models: "",
+        bodies: "",
+        transmissions: "",
+        tractions: "",
+        fuels: "",
+        colors: "",
+        priceMin: "0",
+        priceMax: "100000",
+        kmMin: "0",
+        kmMax: "500000",
+        yearMin: "2005",
+        yearMax: "2024",
+        search: searchBar,
+      }).toString(),
+    });
   };
   return (
     <Paper

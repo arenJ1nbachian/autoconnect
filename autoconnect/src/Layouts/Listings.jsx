@@ -11,23 +11,20 @@ import {
   Slider,
   Grid,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import carLogo from "../Data/carLogo.json";
 import Catalog from "../Components/Catalog";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Listings = () => {
-  const [selectedFilters, setSelectedFilters] = useState({
-    makes: "",
-    models: "",
-    bodies: "",
-    transmissions: "",
-    tractions: "",
-    fuels: "",
-    colors: "",
-    priceRange: [0, 100000],
-    kmRange: [0, 500000],
-    yearRange: [2005, new Date().getFullYear()],
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryString = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+
+  const search = useRef(decodeURIComponent(queryString.get("search") || ""));
 
   const [filterData, setFilterData] = useState({
     makes: [],
@@ -39,42 +36,162 @@ const Listings = () => {
     colors: [],
     priceRange: [0, 100000],
     kmRange: [0, 500000],
-    yearRange: [1990, new Date().getFullYear()],
+    yearRange: [2005, new Date().getFullYear()],
   });
 
   const [availableListings, setAvailableListings] = useState([]);
 
-  useEffect(() => {
-    const {
-      makes,
-      models,
-      bodies,
-      transmissions,
-      tractions,
-      fuels,
-      colors,
-      priceRange = [0, 100000],
-      kmRange = [0, 500000],
-      yearRange = [2005, new Date().getFullYear()],
-    } = selectedFilters;
+  const getQueryParam = (param, defaultValue = "") =>
+    decodeURIComponent(queryString.get(param) || defaultValue);
 
+  useEffect(() => {
+    search.current = getQueryParam("search", "");
+  });
+
+  const selectedFilters = useMemo(() => {
+    const getQueryParam = (param, defaultValue = "") =>
+      decodeURIComponent(queryString.get(param) || defaultValue);
+
+    return {
+      makes: getQueryParam("makes"),
+      models: getQueryParam("models"),
+      bodies: getQueryParam("bodies"),
+      transmissions: getQueryParam("transmissions"),
+      tractions: getQueryParam("tractions"),
+      fuels: getQueryParam("fuels"),
+      colors: getQueryParam("colors"),
+      priceRange: [
+        parseInt(getQueryParam("priceMin", 0), 10),
+        parseInt(getQueryParam("priceMax", 100000), 10),
+      ],
+      kmRange: [
+        parseInt(getQueryParam("kmMin", 0), 10),
+        parseInt(getQueryParam("kmMax", 500000), 10),
+      ],
+      yearRange: [
+        parseInt(getQueryParam("yearMin", 2005), 10),
+        parseInt(getQueryParam("yearMax", new Date().getFullYear()), 10),
+      ],
+    };
+  }, [queryString]);
+
+  const updateQueryParams = (filters) => {
     const queryParams = new URLSearchParams({
-      makes: makes ? makes : "",
-      models: models ? models : "",
-      bodies: bodies ? bodies : "",
-      transmissions: transmissions ? transmissions : "",
-      tractions: tractions ? tractions : "",
-      fuels: fuels ? fuels : "",
-      colors: colors ? colors : "",
-      priceMin: priceRange[0],
-      priceMax: priceRange[1],
-      kmMin: kmRange[0],
-      kmMax: kmRange[1],
-      yearMin: yearRange[0],
-      yearMax: yearRange[1],
+      makes: filters.makes || "",
+      models: filters.models || "",
+      bodies: filters.bodies || "",
+      transmissions: filters.transmissions || "",
+      tractions: filters.tractions || "",
+      fuels: filters.fuels || "",
+      colors: filters.colors || "",
+      priceMin: filters.priceRange[0],
+      priceMax: filters.priceRange[1],
+      kmMin: filters.kmRange[0],
+      kmMax: filters.kmRange[1],
+      yearMin: filters.yearRange[0],
+      yearMax: filters.yearRange[1],
+      search: search.current,
     }).toString();
 
+    navigate(`?${queryParams}`);
+  };
+
+  const handleFilterChange =
+    (field, item = "") =>
+    (event) => {
+      if (event.target.nodeName !== "DIV" && event.target.nodeName !== "IMG") {
+        const targetValue = event.target.value || item;
+        const isNewValueSelected = selectedFilters[field] !== targetValue;
+
+        const newFilters = {
+          ...selectedFilters,
+          [field]: isNewValueSelected ? targetValue : "",
+        };
+
+        if (field !== "search") {
+          search.current = "";
+        }
+
+        updateQueryParams(newFilters);
+      }
+    };
+
+  const handleSliderChange = (field) => (event, newValue) => {
+    const newFilters = {
+      ...selectedFilters,
+      [field]: newValue,
+    };
+
+    search.current = "";
+
+    updateQueryParams(newFilters);
+  };
+
+  const renderRadioGroup = (field, items, logo = false) =>
+    filterData[field] ? (
+      <RadioGroup
+        value={selectedFilters[field] || ""}
+        onClick={handleFilterChange(field)}
+      >
+        {items.map((item) => (
+          <FormControlLabel
+            key={item}
+            value={item}
+            control={<Radio />}
+            label={
+              logo && carLogo.carLogo[item] ? (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      onClick={handleFilterChange(field, item)}
+                      style={{ width: "50px", marginRight: "8px" }}
+                      alt={item}
+                      src={carLogo.carLogo[item]}
+                    />
+                    {item}
+                  </div>
+                </div>
+              ) : (
+                <div>{item}</div>
+              )
+            }
+          />
+        ))}
+      </RadioGroup>
+    ) : null;
+
+  const renderSlider = (field, min, max, step = 1, label = "Slider") => (
+    <Slider
+      value={selectedFilters[field]}
+      onChange={handleSliderChange(field)}
+      valueLabelDisplay="auto"
+      min={min}
+      max={max}
+      step={step}
+      disableSwap
+      getAriaLabel={() => label}
+    />
+  );
+
+  useEffect(() => {
     const fetchFilterData = async () => {
+      const queryParams = new URLSearchParams({
+        makes: selectedFilters.makes || "",
+        models: selectedFilters.models || "",
+        bodies: selectedFilters.bodies || "",
+        transmissions: selectedFilters.transmissions || "",
+        tractions: selectedFilters.tractions || "",
+        fuels: selectedFilters.fuels || "",
+        colors: selectedFilters.colors || "",
+        priceMin: selectedFilters.priceRange[0],
+        priceMax: selectedFilters.priceRange[1],
+        kmMin: selectedFilters.kmRange[0],
+        kmMax: selectedFilters.kmRange[1],
+        yearMin: selectedFilters.yearRange[0],
+        yearMax: selectedFilters.yearRange[1],
+        search: search.current,
+      }).toString();
+
       try {
         const response = await fetch(
           `http://localhost:5000/api/cars/?${queryParams}`,
@@ -88,7 +205,6 @@ const Listings = () => {
         if (!response.ok) throw new Error("Failed to fetch filter data");
 
         const data = await response.json();
-        console.log(data);
         setFilterData((prev) => ({
           ...prev,
           makes: data.filtersAvailable.makes,
@@ -99,8 +215,8 @@ const Listings = () => {
           fuels: data.filtersAvailable.fuels,
           colors: data.filtersAvailable.colors,
         }));
+
         setAvailableListings(data.listingsAvailable);
-        console.log(data);
       } catch (err) {
         console.error(err);
       }
@@ -132,103 +248,11 @@ const Listings = () => {
         console.error(err);
       }
     };
+
     if (selectedFilters.makes !== "") {
       fetchFilteredModels();
     }
   }, [selectedFilters.makes]);
-
-  const handleFilterChange =
-    (field, item = "") =>
-    (event) => {
-      const targetValue = event.target.value || item;
-      console.log("Changing field", field);
-      /* La balise div entourant l'input déclenche son propre événement, suivi de celui de l'input.
-       Nous nous intéressons uniquement à l'événement de l'input, car il contient target.value
-      pour mettre à jour l'état de selectedFilters. Ignorer l'événement du div évite les
-       problèmes de mise à jour d'état qui pourraient entraîner des erreurs de filtrage.
-
-       Cliquer sur le div devrait également avoir le même effet que cliquer sur le bouton radio. */
-
-      console.log(event);
-
-      if (event.target.nodeName !== "DIV" && event.target.nodeName !== "IMG") {
-        if (field === "makes") {
-          selectedFilters["makes"] === targetValue &&
-            setSelectedFilters((prev) => ({ ...prev, models: "" }));
-        }
-        setSelectedFilters((prev) => ({
-          ...prev,
-          [field]: prev[field] === targetValue ? "" : targetValue,
-        }));
-      }
-    };
-
-  const renderRadioGroup = (field, items, logo = false) =>
-    filterData[field] ? (
-      <RadioGroup
-        value={selectedFilters[field] || ""}
-        onClick={handleFilterChange(field)}
-      >
-        {items.map((item) => (
-          <FormControlLabel
-            key={item}
-            value={item}
-            control={<Radio />}
-            label={
-              logo && carLogo.carLogo[item] ? (
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      onClick={handleFilterChange(field, item)}
-                      style={{ width: "50px", marginRight: "8px" }}
-                      alt={item}
-                      src={carLogo.carLogo[item]}
-                    />
-                    {item}
-                  </div>
-                  {selectedFilters.makes !== "" &&
-                    filterData.models !== undefined &&
-                    filterData.models.length > 0 &&
-                    item === selectedFilters.makes && (
-                      <RadioGroup
-                        value={selectedFilters["models"] || ""}
-                        onClick={(e) => {
-                          handleFilterChange("models");
-                        }}
-                        sx={{ marginLeft: "20px", marginTop: "10px" }}
-                      ></RadioGroup>
-                    )}
-                </div>
-              ) : (
-                <div>{item}</div>
-              )
-            }
-          />
-        ))}
-      </RadioGroup>
-    ) : (
-      console.log(filterData)
-    );
-
-  const handleSliderChange = (field) => (event, newValue) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [field]: newValue,
-    }));
-  };
-
-  const renderSlider = (field, min, max, step = 1, label = "Slider") => (
-    <Slider
-      value={selectedFilters[field]}
-      onChange={handleSliderChange(field)}
-      valueLabelDisplay="auto"
-      min={min}
-      max={max}
-      step={step}
-      disableSwap
-      getAriaLabel={() => label}
-    />
-  );
 
   return (
     <>
