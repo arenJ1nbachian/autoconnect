@@ -22,9 +22,11 @@ import seats from "../Data/seatNumbers.json";
 import fuel from "../Data/fuelTypes.json";
 import fuelCons from "../Data/fuelConsumption.json";
 import carColors from "../Data/carColors.json";
+import { useNavigate } from "react-router-dom";
 
 const CarListingCreation = ({ listingId }) => {
   const auth = useContext(AuthContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     make: "",
     model: "",
@@ -139,7 +141,7 @@ const CarListingCreation = ({ listingId }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Listing created:", result);
+        navigate(`/listings/details/${result.listing._id}`);
       } else {
         throw new Error("Failed to create listing");
       }
