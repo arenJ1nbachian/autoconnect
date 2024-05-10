@@ -101,7 +101,13 @@ const Error = () => {
               alignItems: "center",
             }}
           >
-            <Button onClick={() => navigate("/register")}>
+            <Button
+              onClick={() =>
+                navigate(
+                  "/listings?makes=&models=&bodies=&transmissions=&tractions=&fuels=&colors=&priceMin=0&priceMax=100000&kmMin=0&kmMax=500000&yearMin=2005&yearMax=2024&search="
+                )
+              }
+            >
               <SearchIcon sx={{ fontSize: 75, textAlign: "center" }} />
             </Button>
             <Typography
@@ -126,7 +132,7 @@ const Error = () => {
               alignItems: "center",
             }}
           >
-            <Button onClick={() => navigate("/register")}>
+            <Button onClick={() => navigate("/login")}>
               <LoginIcon sx={{ fontSize: 75, textAlign: "center" }} />
             </Button>
             <Typography
