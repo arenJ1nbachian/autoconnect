@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const conversationSchema = new mongoose.Schema({
   participants: [
     {
       type: mongoose.Types.ObjectId,
@@ -13,6 +13,18 @@ const userSchema = new mongoose.Schema({
     required: false,
     ref: "Messages",
   },
+  messages: [
+    {
+      type: mongoose.Types.ObjectId,
+      required: false,
+      ref: "Messages",
+    },
+  ],
+  listingId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Listings",
+  },
 });
 
-module.exports = mongoose.model("Conversations", userSchema);
+module.exports = mongoose.model("Conversations", conversationSchema);

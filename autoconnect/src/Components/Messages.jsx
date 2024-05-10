@@ -3,6 +3,7 @@ import { Box, Button } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
 import { ChatContext } from "../Contexts/ChatContext";
+import Conversations from "./Conversations";
 
 const Messages = () => {
   const auth = useContext(AuthContext);
@@ -11,26 +12,48 @@ const Messages = () => {
   const chatBoxRef = useRef(null);
   const chatButtonRef = useRef(null);
 
-  const [hover, setHover] = useState(false);
+  const [convoHistory, setConvoHistory] = useState({});
+
+  const handleButtonClick = async () => {
+    if (chatBoxRef) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/conversations/${auth.userId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(result);
+          setConvoHistory(result);
+        } else {
+          throw new Error("NO CONVERSATIONS EXISTS");
+        }
+      } catch (err) {
+        console.error("Error fetching conversations:", err);
+      }
+    }
+    chat.toggleChatHistory(!chat.showChatHistory);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("CLICK!");
-
       if (
         chatBoxRef.current &&
         !chatBoxRef.current.contains(event.target) &&
         !chatButtonRef.current.contains(event.target)
       ) {
-        console.log("closing chat history");
         chat.closeChatHistory();
       }
     };
-    console.log("adding event listener");
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      console.log("removing event listener");
-
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [chat]);
@@ -39,7 +62,7 @@ const Messages = () => {
     <>
       <Button
         ref={chatButtonRef}
-        onClick={() => chat.toggleChatHistory(!chat.showChatHistory)}
+        onClick={handleButtonClick}
         sx={{
           color: "white",
           textDecoration: "none",
@@ -82,66 +105,9 @@ const Messages = () => {
               marginTop: "10px",
             }}
           >
-            Chats
+            Mes messages
           </div>
-          <Box
-            sx={{
-              backgroundColor: hover ? "rgba(255, 255, 255, 0.1)" : "",
-              transition: "background-color 0.3s ease",
-              cursor: "pointer",
-              padding: "10px 20px",
-              display: "flex",
-              borderRadius: "20px",
-              alignItems: "center",
-              margin: "10px 0",
-            }}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-          >
-            <Box
-              sx={{
-                flexDirection: "column",
-                borderRadius: "50%",
-                overflow: "hidden",
-                width: "50px",
-                height: "50px",
-              }}
-            >
-              <img
-                src=""
-                alt="Aren"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </Box>
-            <div>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  color: "White",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  marginLeft: "25px",
-                }}
-              >
-                Aren Jinbachian
-              </Box>
-              <Box
-                sx={{
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  color: "white",
-                  marginLeft: "25px",
-                }}
-              >
-                Hey, is this Hyundai Elantra 2016 still available? 🙂
-              </Box>
-            </div>
-          </Box>
+          <Conversations conversations={convoHistory} />
         </Box>
       )}
     </>

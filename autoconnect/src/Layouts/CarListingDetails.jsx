@@ -20,6 +20,9 @@ const CarListingDetails = () => {
   const auth = useContext(AuthContext);
   const [showNumber, setShowNumber] = useState(false);
   const [clickedIndex, setClickIndex] = useState(0);
+  const [message, setMessage] = useState(
+    "J'aimerais savoir si votre annonce est encore disponible ?"
+  );
   const [openModal, setOpenModal] = useState(false);
   const [favorite, setFavorites] = useState(false);
   const [userPublicInfo, setUserPublicInfo] = useState({
@@ -44,6 +47,36 @@ const CarListingDetails = () => {
     color: "",
     userId: "",
   });
+
+  const handleSendMessage = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/conversations/createConvo`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: JSON.stringify({
+            clientId: auth.userId,
+            sellerId: listing.userId,
+            message: message,
+            listingId: listingId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+      } else {
+        throw new Error("Failed to create listing");
+      }
+    } catch (err) {
+      console.error("Error fetching listing:", err);
+    }
+  };
 
   const handleOpenModal = (index) => {
     setClickIndex(index);
@@ -203,8 +236,9 @@ const CarListingDetails = () => {
           >
             Affichage en plein écran
           </Typography>
+
           <img
-            src={listing.images[clickedIndex] || carIcon}
+            src={listing?.images[clickedIndex] || carIcon}
             alt="Main Car Fullscreen"
             style={{
               width: "100%",
@@ -491,8 +525,10 @@ const CarListingDetails = () => {
                 <TextField
                   fullWidth
                   multiline
+                  value={message}
                   minRows={4}
-                  defaultValue="J'aimerais savoir si votre annonce est encore disponible ?"
+                  defaultValue={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   sx={{
                     border: "2px solid #0066cc",
                     borderRadius: "15px",
@@ -501,6 +537,8 @@ const CarListingDetails = () => {
                   }}
                 />
                 <Button
+                  onClick={handleSendMessage}
+                  value={message}
                   variant="contained"
                   sx={{
                     backgroundColor: "#0066cc",

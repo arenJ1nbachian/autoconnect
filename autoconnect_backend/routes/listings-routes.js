@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get("/", listingsController.getListings);
 
+router.get("/getImagePreview/:listingId", listingsController.getImagePreview);
+
 router.get("/:lid", listingsController.getListing);
 
 router.get("/availableModels/:make", listingsController.getAvailableModels);

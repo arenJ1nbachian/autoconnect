@@ -1,3 +1,4 @@
+const listing = require("../models/listing");
 const Listings = require("../models/listing");
 const Users = require("../models/user");
 
@@ -289,12 +290,10 @@ const editListing = async (req, res, next) => {
       listing: updatedListing,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error:
-          "Quelque chose n'a pas fonctionné, veuillez vérifier si vous avez correctement écrit tous les champs et dans le bon format.",
-      });
+    res.status(500).json({
+      error:
+        "Quelque chose n'a pas fonctionné, veuillez vérifier si vous avez correctement écrit tous les champs et dans le bon format.",
+    });
   }
 };
 
@@ -319,6 +318,29 @@ const deleteListing = async (req, res, next) => {
   }
 };
 
+const getImagePreview = async (req, res, next) => {
+  try {
+    const { listingId } = req.params;
+
+    const listing = await Listings.findById(listingId);
+
+    if (!listing) {
+      return res
+        .status(404)
+        .json({ message: "Aucune annonce n'a été trouvée." });
+    }
+    if (listing.images && listing.images.length > 0) {
+      return res.status(200).json(listing.images[0]);
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Aucune image disponible pour cette annonce." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Échec de la récupération de l'image" });
+  }
+};
+
 exports.createListing = createListing;
 exports.getListings = getListings;
 exports.getListingsByUserId = getListingsByUserId;
@@ -327,3 +349,4 @@ exports.getListing = getListing;
 exports.editListing = editListing;
 exports.deleteListing = deleteListing;
 exports.getAvailableModels = getAvailableModels;
+exports.getImagePreview = getImagePreview;

@@ -13,6 +13,9 @@ const userSchema = new mongoose.Schema({
   listings: [
     { type: mongoose.Types.ObjectId, required: false, ref: "Listings" },
   ],
+  usersInteracted: [
+    { type: mongoose.Types.ObjectId, required: false, ref: "Users" },
+  ],
 });
 
 module.exports = mongoose.model("Users", userSchema);
