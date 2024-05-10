@@ -273,12 +273,14 @@ const CarListingDetails = () => {
             fontSize: "40px",
             color: "#0066cc",
             marginBottom: "20px",
-            marginLeft: "14vw",
+            justifyContent: auth.userId !== listing.userId ? "" : "center",
+            marginLeft: auth.userId !== listing.userId ? "14vw" : "",
             transform: "scaleX(1.4)",
           }}
         >
           {listing.year} {listing.make} {listing.model}
-          {auth.token &&
+          {auth.userId !== listing.userId &&
+            auth.token &&
             (favorite === true ? (
               <Button onClick={() => handleFavorite()}>
                 <BookmarkIcon sx={{ fontSize: 50, textAlign: "center" }} />
@@ -293,10 +295,11 @@ const CarListingDetails = () => {
         </Typography>
 
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={auth.userId !== listing.userId ? 8 : 12}>
             <Box
               sx={{
                 display: "flex",
+                justifyContent: auth.userId !== listing.userId ? "" : "center",
                 gap: "20px",
                 marginBottom: "20px",
               }}
@@ -412,102 +415,106 @@ const CarListingDetails = () => {
               )}
             </Box>
           </Grid>
-          <Grid item xs={4}>
-            <Paper
-              sx={{
-                border: "2px solid #0066cc",
-                padding: "20px",
-                borderRadius: "15px",
-                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography
-                  sx={{
-                    color: "#0066cc",
-                    fontSize: "28px",
-                    fontFamily: "Cooper Black, sans-serif",
-                  }}
+          {auth.userId !== listing.userId && (
+            <Grid item xs={4}>
+              <Paper
+                sx={{
+                  border: "2px solid #0066cc",
+                  padding: "20px",
+                  borderRadius: "15px",
+                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  {userPublicInfo.firstName} {userPublicInfo.lastName}
-                </Typography>
+                  <Typography
+                    sx={{
+                      color: "#0066cc",
+                      fontSize: "28px",
+                      fontFamily: "Cooper Black, sans-serif",
+                    }}
+                  >
+                    {userPublicInfo.firstName} {userPublicInfo.lastName}
+                  </Typography>
+
+                  <Typography
+                    sx={{
+                      color: "#0066cc",
+                      margin: "auto",
+                      fontSize: "18px",
+                      fontFamily: "Cooper Black, sans-serif",
+                    }}
+                  >
+                    @{userPublicInfo.userName}
+                  </Typography>
+                </div>
+                {showNumber === false ? (
+                  <Button
+                    onClick={() => setShowNumber(true)}
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#0066cc",
+                      color: "white",
+                      borderRadius: "15px",
+                      marginBottom: "10px",
+                      padding: "10px",
+                      width: "100%",
+                    }}
+                  >
+                    Afficher le numéro de téléphone
+                  </Button>
+                ) : (
+                  <Typography
+                    sx={{
+                      color: "#0066cc",
+                      fontSize: "28px",
+                      marginBottom: "10px",
+                      fontFamily: "Cooper Black, sans-serif",
+                    }}
+                  >
+                    -{userPublicInfo.phoneNumber}
+                  </Typography>
+                )}
 
                 <Typography
+                  variant="h6"
                   sx={{
                     color: "#0066cc",
-                    margin: "auto",
                     fontSize: "18px",
+                    marginBottom: "10px",
                     fontFamily: "Cooper Black, sans-serif",
                   }}
                 >
-                  @{userPublicInfo.userName}
+                  Message
                 </Typography>
-              </div>
-              {showNumber === false ? (
+                <TextField
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  defaultValue="J'aimerais savoir si votre annonce est encore disponible ?"
+                  sx={{
+                    border: "2px solid #0066cc",
+                    borderRadius: "15px",
+                    marginBottom: "10px",
+                    resize: "none",
+                  }}
+                />
                 <Button
-                  onClick={() => setShowNumber(true)}
                   variant="contained"
                   sx={{
                     backgroundColor: "#0066cc",
                     color: "white",
                     borderRadius: "15px",
-                    marginBottom: "10px",
                     padding: "10px",
                     width: "100%",
                   }}
                 >
-                  Afficher le numéro de téléphone
+                  Envoyer le message
                 </Button>
-              ) : (
-                <Typography
-                  sx={{
-                    color: "#0066cc",
-                    fontSize: "28px",
-                    marginBottom: "10px",
-                    fontFamily: "Cooper Black, sans-serif",
-                  }}
-                >
-                  -{userPublicInfo.phoneNumber}
-                </Typography>
-              )}
-
-              <Typography
-                variant="h6"
-                sx={{
-                  color: "#0066cc",
-                  fontSize: "18px",
-                  marginBottom: "10px",
-                  fontFamily: "Cooper Black, sans-serif",
-                }}
-              >
-                Message
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                minRows={4}
-                defaultValue="J'aimerais savoir si votre annonce est encore disponible ?"
-                sx={{
-                  border: "2px solid #0066cc",
-                  borderRadius: "15px",
-                  marginBottom: "10px",
-                  resize: "none",
-                }}
-              />
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#0066cc",
-                  color: "white",
-                  borderRadius: "15px",
-                  padding: "10px",
-                  width: "100%",
-                }}
-              >
-                Envoyer le message
-              </Button>
-            </Paper>
-          </Grid>
+              </Paper>
+            </Grid>
+          )}
         </Grid>
         <Box sx={{ marginTop: "20px" }}>
           <Paper
