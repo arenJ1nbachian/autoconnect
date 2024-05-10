@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
@@ -84,7 +84,7 @@ const Conversations = ({ conversations = "" }) => {
     };
 
     fetchInteractedUsersInfo();
-  }, [auth.token]);
+  }, [auth.token, conversations.conversations, auth.userId]);
 
   console.log(conversationInfo);
 
@@ -152,6 +152,20 @@ const Conversations = ({ conversations = "" }) => {
             </div>
           </Box>
         ))}
+      {conversationInfo.length === 0 && (
+        <Typography
+          sx={{
+            marginTop: "20vh",
+            alignItems: "center",
+            display: "flex",
+            textAlign: "center",
+            fontSize: 25,
+          }}
+        >
+          L'historique des conversations montre que vous n'avez aucune
+          conversation
+        </Typography>
+      )}
     </>
   );
 };

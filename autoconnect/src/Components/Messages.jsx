@@ -107,6 +107,7 @@ const Messages = () => {
           >
             Mes messages
           </div>
+          {console.log(convoHistory)}
           <Conversations conversations={convoHistory} />
         </Box>
       )}
