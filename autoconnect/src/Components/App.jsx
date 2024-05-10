@@ -14,6 +14,7 @@ import UserFavorites from "../Layouts/UserFavorites";
 
 import { AuthContext } from "../Contexts/AuthContext";
 import { useCallback, useState } from "react";
+import { ChatContext } from "../Contexts/ChatContext";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,15 @@ const loggedInRouter = createBrowserRouter([
 const App = () => {
   const [token, setToken] = useState(false);
   const [userId, setUserId] = useState(false);
+  const [showChatHistory, setShowChatHistory] = useState(false);
+
+  const toggleChatHistory = useCallback(() => {
+    setShowChatHistory(!showChatHistory);
+  }, [showChatHistory]);
+
+  const closeChatHistory = useCallback(() => {
+    setShowChatHistory(false);
+  }, []);
 
   const login = useCallback((uid, token) => {
     setToken(token);
@@ -71,7 +81,15 @@ const App = () => {
         logout: logout,
       }}
     >
-      <RouterProvider router={token && userId ? loggedInRouter : router} />
+      <ChatContext.Provider
+        value={{
+          showChatHistory: showChatHistory,
+          toggleChatHistory: toggleChatHistory,
+          closeChatHistory: closeChatHistory,
+        }}
+      >
+        <RouterProvider router={token && userId ? loggedInRouter : router} />
+      </ChatContext.Provider>
     </AuthContext.Provider>
   );
 };

@@ -4,8 +4,11 @@ import SearchBar from "./SearchBar";
 import { useContext } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
 
+import Messages from "./Messages";
+
 const Menu = () => {
   const auth = useContext(AuthContext);
+
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -156,7 +159,7 @@ const Menu = () => {
                   component={NavLink}
                   to={`listing/create`}
                   sx={{
-                    marginRight: "7vw",
+                    marginRight: "5vw",
                     color: "white",
                     textDecoration: "none",
 
@@ -166,6 +169,7 @@ const Menu = () => {
                 >
                   Créer une annonce
                 </Button>
+                <Messages />
               </>
             )}
           </Toolbar>

@@ -96,7 +96,7 @@ const Listings = () => {
       search: search.current,
     }).toString();
 
-    navigate(`?${queryParams}`);
+    navigate(`/listings?${queryParams}`);
   };
 
   const handleFilterChange =
