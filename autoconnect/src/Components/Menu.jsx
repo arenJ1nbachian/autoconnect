@@ -4,8 +4,6 @@ import SearchBar from "./SearchBar";
 import { useContext } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
 
-import Messages from "./Messages";
-
 const Menu = () => {
   const auth = useContext(AuthContext);
 
@@ -169,7 +167,6 @@ const Menu = () => {
                 >
                   Créer une annonce
                 </Button>
-                <Messages />
               </>
             )}
           </Toolbar>

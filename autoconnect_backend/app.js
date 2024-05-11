@@ -4,7 +4,6 @@ const PORT = 5000;
 const uri = "mongodb://localhost:27017/Aren";
 const usersRoutes = require("./routes/users-routes");
 const listingRoutes = require("./routes/listings-routes");
-const textingRoutes = require("./routes/texting-routes");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -26,7 +25,6 @@ app.use((req, res, next) => {
 
 app.use("/api/users", usersRoutes);
 app.use("/api/cars", listingRoutes);
-app.use("/api/conversations", textingRoutes);
 
 mongoose
   .connect(uri)
