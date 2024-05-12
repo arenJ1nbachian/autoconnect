@@ -48,36 +48,6 @@ const CarListingDetails = () => {
     userId: "",
   });
 
-  const handleSendMessage = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/conversations/createConvo`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-          body: JSON.stringify({
-            clientId: auth.userId,
-            sellerId: listing.userId,
-            message: message,
-            listingId: listingId,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-      } else {
-        throw new Error("Failed to create listing");
-      }
-    } catch (err) {
-      console.error("Error fetching listing:", err);
-    }
-  };
-
   const handleOpenModal = (index) => {
     setClickIndex(index);
     setOpenModal(true);
@@ -88,7 +58,7 @@ const CarListingDetails = () => {
     const getListing = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/cars/${listingId}`,
+          process.env.REACT_APP_BACKEND_URL + "cars/" + listingId,
           {
             method: "GET",
             headers: {
@@ -116,7 +86,7 @@ const CarListingDetails = () => {
     const getSeller = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/users/seller/${listing.userId}`,
+          process.env.REACT_APP_BACKEND_URL + "users/seller/" + listing.userId,
           {
             method: "GET",
             headers: {
@@ -145,7 +115,7 @@ const CarListingDetails = () => {
     const getFavoriteContext = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/users/${auth.userId}`,
+          process.env.REACT_APP_BACKEND_URL + "users/" + auth.userId,
           {
             method: "GET",
             headers: {
@@ -175,7 +145,9 @@ const CarListingDetails = () => {
     try {
       favorite
         ? await fetch(
-            `http://localhost:5000/api/users/removeFavorite/${listingId}`,
+            process.env.REACT_APP_BACKEND_URL +
+              "users/removeFavortie/" +
+              listingId,
             {
               method: "PATCH",
               headers: {
@@ -186,7 +158,9 @@ const CarListingDetails = () => {
             }
           )
         : await fetch(
-            `http://localhost:5000/api/users/addFavorite/${listingId}`,
+            process.env.REACT_APP_BACKEND_URL +
+              "users/addFavorite/" +
+              listingId,
             {
               method: "PATCH",
               headers: {
@@ -537,7 +511,6 @@ const CarListingDetails = () => {
                   }}
                 />
                 <Button
-                  onClick={handleSendMessage}
                   value={message}
                   variant="contained"
                   sx={{

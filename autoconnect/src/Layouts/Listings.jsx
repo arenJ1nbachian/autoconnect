@@ -197,7 +197,7 @@ const Listings = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/cars/?${queryParams}`,
+          process.env.REACT_APP_BACKEND_URL + "cars/?" + queryParams,
           {
             method: "GET",
             headers: {
@@ -239,7 +239,9 @@ const Listings = () => {
     const fetchFilteredModels = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/cars/availableModels/${selectedFilters.makes}`,
+          process.env.REACT_APP_BACKEND_URL +
+            "cars/availableModels/" +
+            selectedFilters.makes,
           {
             method: "GET",
             headers: {

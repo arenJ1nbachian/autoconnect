@@ -50,11 +50,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     if (validateForm()) {
       try {
-        const res = await fetch("http://localhost:5000/api/users/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+        const res = await fetch(
+          process.env.REACT_APP_BACKEND_URL + "users/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
         const resData = await res.json();
         if (res.ok) {
           auth.login(resData.uid, resData.token);

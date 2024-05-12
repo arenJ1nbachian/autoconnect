@@ -51,7 +51,7 @@ const CarListingCreation = ({ listingId }) => {
       const getUserListings = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/cars/${listingId}`,
+            process.env.REACT_APP_BACKEND_URL + "cars/" + listingId,
             {
               method: "GET",
               headers: {
@@ -130,17 +130,20 @@ const CarListingCreation = ({ listingId }) => {
 
   const addListing = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/cars/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify({
-          user: auth.userId,
-          ...formData,
-        }),
-      });
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "cars/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: JSON.stringify({
+            user: auth.userId,
+            ...formData,
+          }),
+        }
+      );
 
       const result = await response.json();
 
@@ -157,7 +160,7 @@ const CarListingCreation = ({ listingId }) => {
   const modifyListing = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/cars/${listingId}`,
+        process.env.REACT_APP_BACKEND_URL + "cars/" + listingId,
         {
           method: "PATCH",
           headers: {

@@ -13,7 +13,7 @@ const UserListings = () => {
     const getUserListings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/cars/userListing/${userId}`,
+          process.env.REACT_APP_BACKEND_URL + "cars/userListing/" + userId,
           {
             method: "GET",
             headers: {
@@ -38,7 +38,7 @@ const UserListings = () => {
     const listingId = event.currentTarget.dataset.key;
     try {
       const response = await fetch(
-        `http://localhost:5000/api/cars/${listingId}`,
+        process.env.REACT_APP_BACKEND_URL + "cars/" + listingId,
         {
           method: "DELETE",
           headers: {

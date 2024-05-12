@@ -27,7 +27,7 @@ const UserSettings = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/users/${userId}`,
+          process.env.REACT_APP_BACKEND_URL + "users/" + userId,
           {
             method: "GET",
             headers: {
@@ -63,7 +63,7 @@ const UserSettings = () => {
   const deleteAccount = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/${userId}`,
+        process.env.REACT_APP_BACKEND_URL + "users/" + userId,
         {
           method: "DELETE",
           headers: {
@@ -86,7 +86,7 @@ const UserSettings = () => {
   const saveData = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/${userId}`,
+        process.env.REACT_APP_BACKEND_URL + "users/" + userId,
         {
           method: "PATCH",
           headers: {
