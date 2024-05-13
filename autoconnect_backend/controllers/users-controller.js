@@ -97,7 +97,7 @@ const login = async (req, res, next) => {
         .json({ message: "Nom d'utilisateur ou mot de passe invalide!" });
     }
 
-    const token = jwt.sign({ userId: user._id }, "cleSuperSecrete", {
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_KEY, {
       expiresIn: "1h",
     });
 
