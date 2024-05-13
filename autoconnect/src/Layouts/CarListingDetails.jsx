@@ -146,7 +146,7 @@ const CarListingDetails = () => {
       favorite
         ? await fetch(
             process.env.REACT_APP_BACKEND_URL +
-              "users/removeFavortie/" +
+              "users/removeFavorite/" +
               listingId,
             {
               method: "PATCH",
