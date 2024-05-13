@@ -1,6 +1,7 @@
 {
   "env": {
     "PORT": 5000,
-    "MONGODB_URI": "mongodb://localhost:27017/bd-autoconnect"
+    "MONGODB_URI": "mongodb://localhost:27017/bd-autoconnect",
+    "JWT_KEY": "de5a6f78116eca62d7fc5ce15"
   }
 }
