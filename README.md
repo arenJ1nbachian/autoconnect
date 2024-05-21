@@ -7,9 +7,6 @@ AutoConnect is a web application designed to create, manage, and view car listin
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
