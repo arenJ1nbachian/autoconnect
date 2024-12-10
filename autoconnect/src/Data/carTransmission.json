@@ -1,0 +1,9 @@
+{
+  "transmissionTypes": [
+    "Automatique",
+    "Manuelle",
+    "Semi-automatique",
+    "CVT",
+    "Autre"
+  ]
+}

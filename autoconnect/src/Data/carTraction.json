@@ -1,0 +1,9 @@
+{
+  "tractionTypes": [
+    "Traction avant",
+    "Traction arrière",
+    "Transmission intégrale",
+    "Quatre roues motrices",
+    "Autre"
+  ]
+}

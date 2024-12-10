@@ -1,0 +1,15 @@
+{
+  "carBodyTypes": [
+    "Berline",
+    "Coupé",
+    "Cabriolet",
+    "Break",
+    "Monospace",
+    "SUV",
+    "Fourgonnette",
+    "Camionnette",
+    "Hatchback",
+    "Roadster",
+    "Autre"
+  ]
+}
